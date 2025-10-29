@@ -25,6 +25,27 @@ const Contact = () => {
     })
   }
 
+  const handleDateTimeChange = (e) => {
+    const selectedDateTime = new Date(e.target.value)
+    const hours = selectedDateTime.getHours()
+    const minutes = selectedDateTime.getMinutes()
+
+    // Validate business hours (9-18) and 30-minute intervals
+    if (hours < 9 || hours >= 18 || (minutes !== 0 && minutes !== 30)) {
+      setStatus({
+        type: 'error',
+        message: 'Bitte wählen Sie einen Termin zwischen 9:00 und 18:00 Uhr in 30-Minuten-Intervallen.',
+      })
+      return
+    }
+
+    setFormData({
+      ...formData,
+      datetime: e.target.value,
+    })
+    setStatus({ type: '', message: '' })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -297,9 +318,11 @@ const Contact = () => {
                       id="datetime"
                       name="datetime"
                       value={formData.datetime}
-                      onChange={handleChange}
+                      onChange={handleDateTimeChange}
+                      step="1800"
                       className="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-lg focus:border-primary focus:outline-none transition-colors duration-300"
                     />
+                    <p className="text-xs text-gray-400 mt-1">Öffnungszeiten: 9:00 - 18:00 Uhr</p>
                   </div>
                   <div>
                     <label htmlFor="duration" className="block text-sm font-medium mb-2">{t('contact.schedule.duration')}</label>
@@ -310,10 +333,10 @@ const Contact = () => {
                       onChange={handleChange}
                       className="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-lg focus:border-primary focus:outline-none transition-colors duration-300"
                     >
-                      <option value="15">{t('contact.schedule.durationOptions.15')}</option>
-                      <option value="30">{t('contact.schedule.durationOptions.30')}</option>
-                      <option value="45">{t('contact.schedule.durationOptions.45')}</option>
-                      <option value="60">{t('contact.schedule.durationOptions.60')}</option>
+                      <option value="30">30 Minuten</option>
+                      <option value="60">60 Minuten</option>
+                      <option value="90">90 Minuten</option>
+                      <option value="120">120 Minuten</option>
                     </select>
                   </div>
                   <div>
