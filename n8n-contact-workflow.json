@@ -79,17 +79,18 @@
     },
     {
       "parameters": {
+        "resource": "text",
         "operation": "message",
-        "modelId": "gpt-4o-mini",
+        "model": "gpt-4o-mini",
         "messages": {
-          "values": [
+          "messageValues": [
             {
               "role": "system",
-              "content": "Du bist ein professioneller Assistent von Xyra.Digital. Formuliere eine kurze, freundliche Bestätigungs-E-Mail auf Deutsch für Kontaktanfragen. Stil: professionell aber nicht zu förmlich, enthusiastisch über die Zusammenarbeit.\n\nWichtige Punkte:\n- Bestätige den Empfang der Anfrage\n- Bedanke dich für das Interesse\n- Erwähne dass sich David Louis zeitnah meldet (innerhalb 24h)\n- Falls ein Termin gewünscht wurde, bestätige diesen\n- Halte die Mail kurz (max 150 Wörter)\n- Verwende eine warme, persönliche Anrede\n- Signatur: Viele Grüße, Das Xyra.Digital Team"
+              "messageContent": "Du bist ein professioneller Assistent von Xyra.Digital. Formuliere eine kurze, freundliche Bestätigungs-E-Mail auf Deutsch für Kontaktanfragen. Stil: professionell aber nicht zu förmlich, enthusiastisch über die Zusammenarbeit.\n\nWichtige Punkte:\n- Bestätige den Empfang der Anfrage\n- Bedanke dich für das Interesse\n- Erwähne dass sich David Louis zeitnah meldet (innerhalb 24h)\n- Falls ein Termin gewünscht wurde, bestätige diesen\n- Halte die Mail kurz (max 150 Wörter)\n- Verwende eine warme, persönliche Anrede\n- Signatur: Viele Grüße, Das Xyra.Digital Team"
             },
             {
               "role": "user",
-              "content": "=Erstelle eine Bestätigungs-E-Mail für folgende Anfrage:\n\nName: {{ $json.name }}\nFirma: {{ $json.company || 'nicht angegeben' }}\nNachricht: {{ $json.message }}\n{{ $json.bookDirect ? 'Terminwunsch: ' + $json.datetime + ' (' + $json.durationMinutes + ' Minuten, ' + $json.timezone + ')' : 'Kein direkter Terminwunsch' }}"
+              "messageContent": "=Erstelle eine Bestätigungs-E-Mail für folgende Anfrage:\n\nName: {{ $json.name }}\nFirma: {{ $json.company || 'nicht angegeben' }}\nNachricht: {{ $json.message }}\n{{ $json.bookDirect ? 'Terminwunsch: ' + $json.datetime + ' (' + $json.durationMinutes + ' Minuten, ' + $json.timezone + ')' : 'Kein direkter Terminwunsch' }}"
             }
           ]
         },
@@ -101,7 +102,7 @@
       "id": "chatgpt-generate",
       "name": "ChatGPT - Generate Email",
       "type": "n8n-nodes-base.openAi",
-      "typeVersion": 1.4,
+      "typeVersion": 1.5,
       "position": [650, 300],
       "credentials": {
         "openAiApi": {
