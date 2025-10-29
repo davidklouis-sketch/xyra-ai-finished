@@ -108,7 +108,7 @@
     "message": "Message",
     "send": "Send message",
     "schedule": {
-      "title": "Book a slot (optional)",
+      "title": "Book a slot",
       "dateTime": "Date & time",
       "duration": "Duration",
       "durationOptions": { "15": "15 min", "30": "30 min", "45": "45 min", "60": "60 min" },

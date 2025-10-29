@@ -109,7 +109,7 @@
     "message": "Nachricht",
     "send": "Nachricht senden",
     "schedule": {
-      "title": "Termin buchen (optional)",
+      "title": "Termin buchen",
       "dateTime": "Datum & Uhrzeit",
       "duration": "Dauer",
       "durationOptions": { "15": "15 Min", "30": "30 Min", "45": "45 Min", "60": "60 Min" },

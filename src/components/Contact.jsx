@@ -13,7 +13,7 @@ const Contact = () => {
     datetime: '',
     duration: '30',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-    bookDirect: false,
+    bookDirect: true,
   })
   const [status, setStatus] = useState({ type: '', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -25,25 +25,34 @@ const Contact = () => {
     })
   }
 
-  const handleDateTimeChange = (e) => {
-    const selectedDateTime = new Date(e.target.value)
-    const hours = selectedDateTime.getHours()
-    const minutes = selectedDateTime.getMinutes()
-
-    // Validate business hours (9-18) and 30-minute intervals
-    if (hours < 9 || hours >= 18 || (minutes !== 0 && minutes !== 30)) {
-      setStatus({
-        type: 'error',
-        message: 'Bitte wählen Sie einen Termin zwischen 9:00 und 18:00 Uhr in 30-Minuten-Intervallen.',
-      })
-      return
-    }
-
+  const handleDateChange = (e) => {
+    const date = e.target.value
+    const time = formData.datetime.split('T')[1] || '09:00'
     setFormData({
       ...formData,
-      datetime: e.target.value,
+      datetime: date ? `${date}T${time}` : '',
     })
-    setStatus({ type: '', message: '' })
+  }
+
+  const handleTimeChange = (e) => {
+    const time = e.target.value
+    const date = formData.datetime.split('T')[0] || new Date().toISOString().split('T')[0]
+    setFormData({
+      ...formData,
+      datetime: `${date}T${time}`,
+    })
+  }
+
+  // Generate time slots from 9:00 to 17:30 in 30-minute intervals
+  const generateTimeSlots = () => {
+    const slots = []
+    for (let hour = 9; hour < 18; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`)
+      if (hour < 17) {
+        slots.push(`${hour.toString().padStart(2, '0')}:30`)
+      }
+    }
+    return slots
   }
 
   const handleSubmit = async (e) => {
@@ -102,7 +111,7 @@ const Contact = () => {
             datetime: '',
             duration: '30',
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-            bookDirect: false,
+            bookDirect: true,
           })
         } else {
           // Handle validation errors from n8n
@@ -273,7 +282,7 @@ const Contact = () => {
 
               <div className="mb-6">
                 <label htmlFor="company" className="block text-sm font-medium mb-2">
-                  {t('contact.company')}
+                  {t('contact.company')} *
                 </label>
                 <input
                   type="text"
@@ -281,6 +290,7 @@ const Contact = () => {
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
+                  required
                   autoComplete="organization"
                   className="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-lg focus:border-primary focus:outline-none transition-colors duration-300"
                   placeholder="Your Company"
@@ -312,17 +322,34 @@ const Contact = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label htmlFor="datetime" className="block text-sm font-medium mb-2">{t('contact.schedule.dateTime')}</label>
+                    <label htmlFor="date" className="block text-sm font-medium mb-2">Datum</label>
                     <input
-                      type="datetime-local"
-                      id="datetime"
-                      name="datetime"
-                      value={formData.datetime}
-                      onChange={handleDateTimeChange}
-                      step="1800"
+                      type="date"
+                      id="date"
+                      name="date"
+                      value={formData.datetime ? formData.datetime.split('T')[0] : ''}
+                      onChange={handleDateChange}
+                      min={new Date().toISOString().split('T')[0]}
                       className="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-lg focus:border-primary focus:outline-none transition-colors duration-300"
                     />
-                    <p className="text-xs text-gray-400 mt-1">Öffnungszeiten: 9:00 - 18:00 Uhr</p>
+                  </div>
+                  <div>
+                    <label htmlFor="time" className="block text-sm font-medium mb-2">Uhrzeit</label>
+                    <select
+                      id="time"
+                      name="time"
+                      value={formData.datetime ? formData.datetime.split('T')[1] : '09:00'}
+                      onChange={handleTimeChange}
+                      className="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-lg focus:border-primary focus:outline-none transition-colors duration-300"
+                    >
+                      <option value="">Uhrzeit wählen</option>
+                      {generateTimeSlots().map((slot) => (
+                        <option key={slot} value={slot}>
+                          {slot} Uhr
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">9:00 - 18:00 Uhr</p>
                   </div>
                   <div>
                     <label htmlFor="duration" className="block text-sm font-medium mb-2">{t('contact.schedule.duration')}</label>
