@@ -20,7 +20,7 @@ services:
       - web
 
   website:
-    image: ghcr.io/davidklouis-sketch/xyra-ai-finished/website:latest
+    image: ghcr.io/davidklouis-sketch/xyra-ai-finished/website:main
     depends_on:
       - traefik
     labels:
