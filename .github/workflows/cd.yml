@@ -52,9 +52,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: |
-            docker-compose.yml
-            traefik
+            ./docker-compose.yml
+            ./traefik/**
           target: ${{ secrets.REMOTE_DIR }}
+          overwrite: true
 
       - name: Deploy via SSH (docker compose up)
         uses: appleboy/ssh-action@v1.2.0
