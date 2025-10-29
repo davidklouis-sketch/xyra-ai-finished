@@ -53,13 +53,20 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Rsync files to server
+      - name: Ensure remote deploy dir
         shell: bash
         run: |
-          rsync -avzr --delete \
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p '${{ secrets.REMOTE_DIR }}/app'"
+
+      - name: Rsync files to server (safe)
+        shell: bash
+        run: |
+          rsync -avzr \
+            --exclude ".*" \
             -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes" \
             ./docker-compose.yml ./traefik/ \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_DIR }}/"
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_DIR }}/app/"
 
       - name: Deploy via SSH (docker compose up)
         uses: appleboy/ssh-action@v1.2.0
@@ -69,8 +76,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             set -e
-            mkdir -p ${{ secrets.REMOTE_DIR }}
-            cd ${{ secrets.REMOTE_DIR }}
+            mkdir -p ${{ secrets.REMOTE_DIR }}/app
+            cd ${{ secrets.REMOTE_DIR }}/app
             export DOMAIN=${{ secrets.DOMAIN }}
             export TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}
             export GITHUB_REPOSITORY=${{ github.repository }}
