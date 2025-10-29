@@ -80,7 +80,6 @@ jobs:
             cd ${{ secrets.REMOTE_DIR }}/app
             export DOMAIN=${{ secrets.DOMAIN }}
             export TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}
-            export GITHUB_REPOSITORY=${{ github.repository }}
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker compose pull
             docker compose up -d
