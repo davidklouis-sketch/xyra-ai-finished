@@ -234,9 +234,12 @@ curl -X POST https://n8n.example.com/webhook-test/contact-form \
 
 ### E-Mail Template customizen:
 
-Wenn du ein fixes Template statt ChatGPT willst:
+**Option A: Fixes Template statt ChatGPT (Einfacher + Zuverlässiger)**
+
 1. Ersetze **"ChatGPT - Generate Email"** Node durch **"Set"** Node
 2. Erstelle Variable mit Template:
+   - Variable Name: `emailBody`
+   - Value:
    ```
    Hallo {{ $json.name }},
 
@@ -249,6 +252,16 @@ Wenn du ein fixes Template statt ChatGPT willst:
    Viele Grüße,
    Das Xyra.Digital Team
    ```
+3. Im Outlook Node: Body = `={{ $json.emailBody }}`
+
+**Option B: HTTP Request statt OpenAI Node (Bei Node-Problemen)**
+
+Siehe `n8n-http-openai-alternative.json` für eine HTTP Request Node Konfiguration, die direkt die OpenAI API aufruft.
+
+1. Lösche OpenAI Node
+2. Füge "HTTP Request" Node hinzu
+3. Importiere Config aus `n8n-http-openai-alternative.json`
+4. Im Outlook Node: Body = `={{ $json.choices[0].message.content }}`
 
 ---
 

@@ -1,0 +1,38 @@
+{
+  "name": "HTTP Request - OpenAI Alternative",
+  "comment": "Replace the OpenAI node with this HTTP Request node for direct API access",
+  "parameters": {
+    "method": "POST",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "openAiApi",
+    "sendHeaders": true,
+    "headerParameters": {
+      "parameters": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    "sendBody": true,
+    "bodyParameters": {
+      "parameters": []
+    },
+    "specifyBody": "json",
+    "jsonBody": "={{ {\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Du bist ein professioneller Assistent von Xyra.Digital. Formuliere eine kurze, freundliche Bestätigungs-E-Mail auf Deutsch für Kontaktanfragen. Stil: professionell aber nicht zu förmlich, enthusiastisch über die Zusammenarbeit.\\n\\nWichtige Punkte:\\n- Bestätige den Empfang der Anfrage\\n- Bedanke dich für das Interesse\\n- Erwähne dass sich David Louis zeitnah meldet (innerhalb 24h)\\n- Falls ein Termin gewünscht wurde, bestätige diesen\\n- Halte die Mail kurz (max 150 Wörter)\\n- Verwende eine warme, persönliche Anrede\\n- Signatur: Viele Grüße, Das Xyra.Digital Team\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Erstelle eine Bestätigungs-E-Mail für folgende Anfrage:\\n\\nName: \" + $json.name + \"\\nFirma: \" + ($json.company || 'nicht angegeben') + \"\\nNachricht: \" + $json.message + \"\\n\" + ($json.bookDirect ? 'Terminwunsch: ' + $json.datetime + ' (' + $json.durationMinutes + ' Minuten, ' + $json.timezone + ')' : 'Kein direkter Terminwunsch')\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 500\n} }}",
+    "options": {}
+  },
+  "type": "n8n-nodes-base.httpRequest",
+  "typeVersion": 4.2,
+  "position": [650, 300],
+  "id": "http-openai",
+  "name": "HTTP Request - OpenAI",
+  "credentials": {
+    "openAiApi": {
+      "id": "openai-credentials",
+      "name": "OpenAI API"
+    }
+  },
+  "notes": "Dann im Outlook Node den Response-Pfad ändern zu: {{ $json.choices[0].message.content }}"
+}
