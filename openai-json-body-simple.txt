@@ -1,0 +1,13 @@
+={{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestaetigung auf Deutsch fuer Kontaktanfragen. Professioneller Stil, enthusiastisch. Bestaetigung des Empfangs, Dank fuer Interesse, David Louis meldet sich in 24h. Kurz halten (max 150 Woerter). Signatur: Viele Gruesse, Das Xyra.Digital Team"
+    },
+    {
+      "role": "user",
+      "content": {{ "Erstelle eine E-Mail fuer: Name " + $json.name + ", Firma " + $json.company + ", Nachricht: " + $json.message }}
+    }
+  ]
+}}
