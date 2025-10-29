@@ -45,17 +45,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
+      - name: Sync files to server via rsync
+        uses: burnett01/rsync-deployments@7.1.5
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: |
-            ./docker-compose.yml
-            ./traefik/**
-          target: ${{ secrets.REMOTE_DIR }}
-          overwrite: true
+          switches: -avzr --delete
+          path: |
+            docker-compose.yml
+            traefik/
+          remote_path: ${{ secrets.REMOTE_DIR }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
 
       - name: Deploy via SSH (docker compose up)
         uses: appleboy/ssh-action@v1.2.0
@@ -65,6 +65,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             set -e
+            mkdir -p ${{ secrets.REMOTE_DIR }}
             cd ${{ secrets.REMOTE_DIR }}
             export DOMAIN=${{ secrets.DOMAIN }}
             export TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}
