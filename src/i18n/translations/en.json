@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "features": "Features",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "Applied AI, engineered",
+    "title1": "Build AI that ships",
+    "title2": "and scales",
+    "subtitle": "Music industry and creator focus: chat, voice and workflow agents for releases, tours, merch, community and support.",
+    "ctaStart": "Start a project",
+    "ctaLearn": "What we do",
+    "chips": {
+      "musicTitle": "Music",
+      "musicLabel": "Labels, artists, management",
+      "creatorTitle": "Creator",
+      "creatorLabel": "YouTube, Twitch, TikTok, Insta",
+      "commerceTitle": "Commerce",
+      "commerceLabel": "Merch, tickets, memberships"
+    }
+  },
+  "services": {
+    "heading": "What we build",
+    "subheading": "Applied AI for customer experience and operations — designed for production from day one.",
+    "nicheLine": "Music & creator niches: campaigns, ticketing, merch, fan support, memberships.",
+    "items": {
+      "chat": { "title": "AI Chat Agents", "desc": "Customer support and sales conversations that understand context and take action." },
+      "voice": { "title": "Voice Agents", "desc": "Natural phone experiences for booking, triage, and follow-ups with guardrails." },
+      "automation": { "title": "Process Automation", "desc": "Orchestrate multi-step workflows that integrate your tools and data safely." },
+      "custom": { "title": "Custom Agents", "desc": "Tailored reasoning and retrieval for your domain, users, and compliance needs." },
+      "always": { "title": "24/7 Availability", "desc": "Always-on service with graceful fallback paths and human handoff." },
+      "leads": { "title": "Lead Qualification", "desc": "Qualify, route, and schedule — integrated with your CRM and calendar." },
+      "multi": { "title": "Multi-Channel Support", "desc": "Web, chat, email, and phone — one agent brain across channels." },
+      "crm": { "title": "CRM Integration", "desc": "Plug into data warehouses, CRMs, and internal APIs with auditability." }
+    }
+  },
+  "features": {
+    "heading": "Why Xyra.Ai",
+    "subheading": "Practical AI that ships — with the guardrails, observability, and UX polish your users expect.",
+    "items": {
+      "production": { "title": "Production-first", "desc": "Shipping agents with monitoring, retries, and graceful fallbacks." },
+      "human": { "title": "Human-centered", "desc": "Great UX with clear affordances and human handoff where it matters." },
+      "security": { "title": "Security by design", "desc": "Scoped permissions, auditability, and data minimization from day one." },
+      "scale": { "title": "Scalable", "desc": "Autoscale across regions with cost controls and caching." },
+      "iteration": { "title": "Fast iteration", "desc": "Short feedback loops, measurable improvements, continuous delivery." },
+      "outcomes": { "title": "Outcome driven", "desc": "Optimized to move your key metrics, not vanity demos." }
+    },
+    "benefits": [
+      "Reduce handling time and resolution costs",
+      "Increase lead capture and qualification rate",
+      "Lower churn via proactive outreach and follow-ups",
+      "Improve CSAT with faster, accurate responses",
+      "Unlock insights from conversations and operations",
+      "Scale safely with controls and observability"
+    ],
+    "outcomesTitle": "Outcomes that matter",
+    "outcomesSubtitle": "We focus on measurable impact: revenue, cost, and customer experience. No gimmicks.",
+    "supportLine": "Partnership mindset with responsive support"
+  },
+  "pricing": {
+    "heading": "Engagement models",
+    "subheading": "Start with a sprint, launch a use case, then scale. Clear outcomes at each step.",
+    "mostPopular": "Most Popular",
+    "cta": "Talk to us",
+    "note": "We’ll align on scope, timing, and outcomes together.",
+    "plans": {
+      "discovery": {
+        "name": "Discovery Sprint",
+        "desc": "2–3 weeks to scope, prototype, and define success metrics",
+        "features": [
+          "Opportunity discovery & success definition",
+          "Tech plan & architecture outline",
+          "Prototype or workflow spike",
+          "Roadmap & measurable outcomes"
+        ]
+      },
+      "build": {
+        "name": "Build & Launch",
+        "desc": "Ship the first use case to production with guardrails",
+        "features": [
+          "Agent logic, tools, and retrieval",
+          "Integrations and observability",
+          "A/B tests and iteration cadence",
+          "Security controls and audit trail"
+        ]
+      },
+      "scale": {
+        "name": "Scale Program",
+        "desc": "Expand to new channels and use cases with SLAs",
+        "features": [
+          "Multi-channel orchestration",
+          "Performance & cost optimization",
+          "Compliance reviews & governance",
+          "Team enablement & training"
+        ]
+      }
+    }
+  },
+  "contact": {
+    "heading": "Start a conversation",
+    "name": "Your Name",
+    "email": "Email Address",
+    "company": "Company",
+    "message": "Message",
+    "send": "Send message",
+    "schedule": {
+      "title": "Book a slot (optional)",
+      "dateTime": "Date & time",
+      "duration": "Duration",
+      "durationOptions": { "15": "15 min", "30": "30 min", "45": "45 min", "60": "60 min" },
+      "timezone": "Time zone",
+      "book": "Book now",
+      "success": "Meeting requested. We’ll send a confirmation.",
+      "error": "Booking failed. Please try again."
+    }
+  }
+}
+
+

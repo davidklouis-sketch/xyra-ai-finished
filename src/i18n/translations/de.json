@@ -1,0 +1,143 @@
+{
+  "nav": {
+    "home": "Start",
+    "services": "Leistungen",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "contact": "Kontakt",
+    "getStarted": "Loslegen"
+  },
+  "hero": {
+    "badge": "Angewandte KI, systemintegriert",
+    "title1": "Baue KI, die ausliefert",
+    "title2": "und skaliert",
+    "subtitle": "Fokus Musikbranche & Creator‑Economy: Chat‑, Voice‑ und Workflow‑Agenten für Releases, Touren, Merch, Community & Support.",
+    "ctaStart": "Projekt starten",
+    "ctaLearn": "Was wir tun",
+    "chips": {
+      "musicTitle": "Music",
+      "musicLabel": "Labels, Artists, Management",
+      "creatorTitle": "Creator",
+      "creatorLabel": "YouTube, Twitch, TikTok, Insta",
+      "commerceTitle": "Commerce",
+      "commerceLabel": "Merch, Tickets, Memberships"
+    }
+  },
+  "services": {
+    "heading": "Was wir bauen",
+    "subheading": "Angewandte KI für Customer Experience und Operations — von Anfang an produktionsreif.",
+    "nicheLine": "Musik & Creator‑Nischen: Kampagnen, Ticketing, Merch, Fan‑Support, Memberships.",
+    "items": {
+      "chat": { "title": "KI‑Chat‑Agenten", "desc": "Kontextverständnis und Aktionen für Support und Vertrieb." },
+      "voice": { "title": "Voice‑Agenten", "desc": "Natürliche Telefonerlebnisse für Buchung, Triage und Follow‑ups mit Leitplanken." },
+      "automation": { "title": "Prozessautomatisierung", "desc": "Mehrstufige Workflows sicher mit Ihren Tools und Daten verknüpfen." },
+      "custom": { "title": "Maßgeschneiderte Agenten", "desc": "Domänenspezifisches Reasoning und Retrieval mit Compliance‑Fokus." },
+      "always": { "title": "24/7 Verfügbarkeit", "desc": "Stets erreichbar – mit sanften Fallbacks und Handover zum Menschen." },
+      "leads": { "title": "Lead‑Qualifizierung", "desc": "Qualifizieren, routen und terminieren – integriert in Ihr CRM und den Kalender." },
+      "multi": { "title": "Omni‑Channel", "desc": "Web, Chat, E‑Mail und Telefon – ein Agenten‑Kern über alle Kanäle." },
+      "crm": { "title": "CRM‑Integration", "desc": "Anbindung an Data Warehouses, CRMs und interne APIs mit Nachvollziehbarkeit." }
+    }
+  },
+  "features": {
+    "heading": "Warum Xyra.Ai",
+    "subheading": "Pragmatische KI, die ausliefert – mit Leitplanken, Observability und der UX, die Ihre Nutzer erwarten.",
+    "outcomesTitle": "Wirkung, die zählt",
+    "outcomesSubtitle": "Wir fokussieren messbare Wirkung: Umsatz, Kosten und Kundenerlebnis – ohne Spielereien.",
+    "supportLine": "Partnerschaftliches Mindset mit schnellem, verlässlichem Support",
+    "items": {
+      "production": { "title": "Production‑first", "desc": "Agenten mit Monitoring, Retries und sanften Fallbacks ausliefern." },
+      "human": { "title": "Menschenzentriert", "desc": "Gute UX mit klaren Signalen und Handover, wo es zählt." },
+      "security": { "title": "Security by Design", "desc": "Gescopte Berechtigungen, Auditierbarkeit und Datenminimierung von Anfang an." },
+      "scale": { "title": "Skalierbar", "desc": "Regionsübergreifend mit Kostenkontrolle und Caching skalieren." },
+      "iteration": { "title": "Schnelle Iteration", "desc": "Kurze Feedback‑Loops, messbare Verbesserungen, Continuous Delivery." },
+      "outcomes": { "title": "Outcome‑getrieben", "desc": "Optimiert für Ihre Kernmetriken – keine Schein‑Demos." }
+    },
+    "benefits": [
+      "Bearbeitungszeit und Lösungskosten senken",
+      "Lead‑Erfassung und ‑Qualifizierung steigern",
+      "Abwanderung verringern durch gezielte proaktive Kommunikation",
+      "CSAT mit schnelleren, präzisen Antworten verbessern",
+      "Insights aus Gesprächen und Abläufen heben",
+      "Sicher mit Kontrollen und Observability skalieren"
+    ]
+  },
+  "pricing": {
+    "heading": "Zusammenarbeit",
+    "subheading": "Start mit einem Sprint, launche ein Use Case, skaliere danach – klare Ergebnisse je Phase.",
+    "mostPopular": "Beliebteste Wahl",
+    "cta": "Kontakt aufnehmen",
+    "note": "Wir stimmen Umfang, Timing und Ziele gemeinsam ab.",
+    "plans": {
+      "discovery": {
+        "name": "Discovery‑Sprint",
+        "desc": "2–3 Wochen für Scoping, Prototyp und Erfolgsmetriken",
+        "features": [
+          "Opportunity‑Mapping & Zieldefinition",
+          "Tech‑Plan & Architektur‑Skizze",
+          "Prototyp oder Workflow‑Spike",
+          "Roadmap & messbare Outcomes"
+        ]
+      },
+      "build": {
+        "name": "Build & Launch",
+        "desc": "Erstes Use Case mit Leitplanken in Produktion bringen",
+        "features": [
+          "Agent‑Logik, Tools und Retrieval",
+          "Integrationen und Observability",
+          "A/B‑Tests und Iterationsrhythmus",
+          "Security‑Kontrollen und Audit‑Trail"
+        ]
+      },
+      "scale": {
+        "name": "Scale‑Programm",
+        "desc": "Auf weitere Kanäle und Use Cases mit SLAs ausweiten",
+        "features": [
+          "Multi‑Channel‑Orchestrierung",
+          "Performance‑ und Kosten‑Optimierung",
+          "Compliance‑Reviews & Governance",
+          "Enablement & Training"
+        ]
+      }
+    }
+  },
+  "contact": {
+    "heading": "Starte ein Gespräch",
+    "subtitle": "Erzähl uns von deinen Zielen. Wir schlagen einen Sprint vor, der Wirkung schnell belegt.",
+    "name": "Dein Name",
+    "email": "E‑Mail-Adresse",
+    "company": "Unternehmen",
+    "message": "Nachricht",
+    "send": "Nachricht senden",
+    "schedule": {
+      "title": "Termin buchen (optional)",
+      "dateTime": "Datum & Uhrzeit",
+      "duration": "Dauer",
+      "durationOptions": { "15": "15 Min", "30": "30 Min", "45": "45 Min", "60": "60 Min" },
+      "timezone": "Zeitzone",
+      "book": "Direkt buchen",
+      "success": "Termin angefragt. Wir senden dir eine Bestätigung.",
+      "error": "Terminbuchung fehlgeschlagen. Bitte erneut versuchen."
+    },
+    "info": {
+      "title": "Kontaktinformationen",
+      "desc": "Fragen zum Launch oder Interesse an Zusammenarbeit? Schreib uns gern.",
+      "email": "E‑Mail",
+      "phone": "Telefon",
+      "location": "Standort",
+      "comingSoon": "Bald verfügbar",
+      "tbd": "Noch offen"
+    },
+    "submit": {
+      "success": "Danke für dein Interesse! Wir melden uns zeitnah.",
+      "error": "Etwas ist schiefgelaufen. Bitte erneut versuchen oder an hello@xyra.ai mailen."
+    },
+    "placeholders": {
+      "name": "Max Mustermann",
+      "email": "max@firma.de",
+      "company": "Dein Unternehmen",
+      "message": "Erzähl uns von deinem Vorhaben …"
+    }
+  }
+}
+
+
