@@ -53,12 +53,25 @@ const Contact = () => {
           }),
         })
 
-        const data = await response.json()
+        // Check if response has content before parsing JSON
+        let data = null
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.includes('application/json')) {
+          const text = await response.text()
+          if (text && text.trim().length > 0) {
+            try {
+              data = JSON.parse(text)
+            } catch (e) {
+              console.error('Failed to parse JSON:', e, 'Response text:', text)
+              throw new Error('Invalid response from server')
+            }
+          }
+        }
 
         if (response.ok) {
           setStatus({
             type: 'success',
-            message: data.message || 'Thank you for your message! We\'ll get back to you soon.',
+            message: data?.message || 'Thank you for your message! We\'ll get back to you soon.',
           })
           setFormData({
             name: '',
@@ -72,13 +85,13 @@ const Contact = () => {
           })
         } else {
           // Handle validation errors from n8n
-          if (data.error === 'validation_failed') {
+          if (data && data.error === 'validation_failed') {
             setStatus({
               type: 'error',
               message: data.message || 'Please check your input and try again.',
             })
           } else {
-            throw new Error(data.message || 'Failed to submit form')
+            throw new Error(data?.message || 'Failed to submit form')
           }
         }
       } catch (error) {

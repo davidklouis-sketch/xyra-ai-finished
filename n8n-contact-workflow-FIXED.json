@@ -1,0 +1,523 @@
+{
+  "name": "Contact Form with Validation & Availability Check",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-form",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "contact-form"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.item.json.body;\nlet validationErrors = [];\n\nfunction isValidEmail(email) {\n  const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;\n  return regex.test(email);\n}\n\nif (!data.email || typeof data.email !== 'string') {\n  validationErrors.push('Email is required');\n} else {\n  const emailLower = data.email.toLowerCase().trim();\n  if (!isValidEmail(emailLower)) {\n    validationErrors.push('Invalid email format');\n  } else if (emailLower.length > 254) {\n    validationErrors.push('Email too long');\n  } else {\n    const invalidPatterns = [\n      /^test@test\\./i, /^admin@admin\\./i, /^noreply@/i,\n      /^no-reply@/i, /@example\\./i, /@test\\./i,\n      /@localhost/i, /@invalid\\./i\n    ];\n    let hasInvalidPattern = false;\n    for (const pattern of invalidPatterns) {\n      if (pattern.test(emailLower)) {\n        validationErrors.push('Invalid email address');\n        hasInvalidPattern = true;\n        break;\n      }\n    }\n    if (!hasInvalidPattern) {\n      const disposableDomains = [\n        'tempmail.com', '10minutemail.com', 'guerrillamail.com',\n        'mailinator.com', 'throwaway.email', 'getnada.com',\n        'temp-mail.org', 'trashmail.com'\n      ];\n      const emailDomain = emailLower.split('@')[1];\n      if (disposableDomains.includes(emailDomain)) {\n        validationErrors.push('Disposable email addresses are not allowed');\n      }\n    }\n  }\n}\n\nif (data.honeypot && data.honeypot.length > 0) {\n  validationErrors.push('Bot detected');\n}\n\nif (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {\n  validationErrors.push('Name is required');\n} else if (data.name.trim().length < 2) {\n  validationErrors.push('Name must be at least 2 characters');\n}\n\nfunction sanitizeInput(text) {\n  if (!text) return '';\n  const dangerousPhrases = [\n    'ignore all previous', 'ignore above', 'system:',\n    'assistant:', 'new instructions', 'disregard',\n    'forget everything'\n  ];\n  let cleaned = String(text);\n  for (const phrase of dangerousPhrases) {\n    cleaned = cleaned.replace(new RegExp(phrase, 'gi'), '[REMOVED]');\n  }\n  return cleaned;\n}\n\nconst isValid = validationErrors.length === 0;\nconst emailLower = data.email ? data.email.toLowerCase().trim() : '';\n\nreturn {\n  json: {\n    isValid: isValid,\n    validationErrors: validationErrors,\n    name: sanitizeInput(data.name || '').substring(0, 100),\n    email: emailLower,\n    company: sanitizeInput(data.company || '').substring(0, 100),\n    message: sanitizeInput(data.message || '').substring(0, 1000),\n    datetime: data.datetime || '',\n    durationMinutes: Math.min(Math.max(Number(data.durationMinutes) || 30, 15), 120),\n    timezone: data.timezone || 'Europe/Berlin',\n    bookDirect: Boolean(data.bookDirect)\n  }\n};"
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition1",
+              "leftValue": "={{ $json.validationErrors.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": false
+        }
+      },
+      "id": "check-validation",
+      "name": "Check Validation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 400,
+        "responseBody": "={{ { \"success\": false, \"error\": \"validation_failed\", \"message\": $json.validationErrors.join(\", \") } }}",
+        "options": {}
+      },
+      "id": "respond-validation-error",
+      "name": "Respond Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 450]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.item.json;\n\nconst bookDirect = data.bookDirect || false;\nconst datetime = data.datetime || '';\nconst durationMinutes = data.durationMinutes || 30;\n\nif (!bookDirect || !datetime) {\n  return {\n    json: {\n      ...data,\n      validBookingRequest: false,\n      reason: 'no_booking_requested'\n    }\n  };\n}\n\nconst requestedDate = new Date(datetime);\nconst requestedHour = requestedDate.getHours();\nconst requestedMinute = requestedDate.getMinutes();\n\nconst isWithinBusinessHours = (requestedHour >= 9 && requestedHour < 18) || (requestedHour === 18 && requestedMinute === 0);\n\nif (!isWithinBusinessHours) {\n  return {\n    json: {\n      ...data,\n      validBookingRequest: false,\n      reason: 'outside_business_hours',\n      businessHours: '9:00-18:00 Uhr'\n    }\n  };\n}\n\nconst now = new Date();\nif (requestedDate <= now) {\n  return {\n    json: {\n      ...data,\n      validBookingRequest: false,\n      reason: 'past_date'\n    }\n  };\n}\n\nconst endDate = new Date(requestedDate.getTime() + (durationMinutes * 60000));\n\nreturn {\n  json: {\n    ...data,\n    validBookingRequest: true,\n    calendarQuery: {\n      timeMin: requestedDate.toISOString(),\n      timeMax: endDate.toISOString(),\n      timeZone: data.timezone || 'Europe/Berlin'\n    }\n  }\n};"
+      },
+      "id": "check-time",
+      "name": "Check Time & Prepare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 180]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition1",
+              "leftValue": "={{ $json.validBookingRequest }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-valid-booking",
+      "name": "Valid Booking Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 180]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleCalendarOAuth2Api",
+        "requestMethod": "POST",
+        "url": "https://www.googleapis.com/calendar/v3/freeBusy",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  timeMin: $json.calendarQuery.timeMin,\n  timeMax: $json.calendarQuery.timeMax,\n  timeZone: $json.calendarQuery.timeZone,\n  items: [{ id: 'primary' }]\n}) }}",
+        "options": {}
+      },
+      "id": "calendar-get-availability",
+      "name": "Google Calendar Get Availability",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 80],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "your-google-calendar-credential-id",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const availabilityData = $input.first().json;\nconst originalData = $('Check Time & Prepare').item.json;\n\nlet isAvailable = true;\nlet conflictingEvents = 0;\n\nif (availabilityData.available !== undefined) {\n  isAvailable = availabilityData.available;\n} else if (availabilityData.busy && Array.isArray(availabilityData.busy)) {\n  isAvailable = availabilityData.busy.length === 0;\n  conflictingEvents = availabilityData.busy.length;\n} else if (availabilityData.calendars) {\n  const primaryCal = availabilityData.calendars.primary || availabilityData.calendars[Object.keys(availabilityData.calendars)[0]];\n  if (primaryCal && primaryCal.busy) {\n    isAvailable = primaryCal.busy.length === 0;\n    conflictingEvents = primaryCal.busy.length;\n  }\n}\n\nreturn {\n  json: {\n    ...originalData,\n    isAvailable: isAvailable,\n    conflictingEvents: conflictingEvents,\n    calendarCheckComplete: true\n  }\n};"
+      },
+      "id": "check-availability",
+      "name": "Check Availability",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 80]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition1",
+              "leftValue": "={{ $json.isAvailable }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-slot-free",
+      "name": "Time Slot Free?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1780, 80]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "requestMethod": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen. Professioneller Stil, enthusiastisch. Bestätigung des Empfangs, Dank für Interesse, David Louis meldet sich in 24h. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail für: Name ' + $json.name + ', Firma ' + $json.company + ', Nachricht: ' + $json.message + ($json.reason === 'outside_business_hours' ? '\\n\\nHINWEIS: Gewünschter Termin außerhalb unserer Geschäftszeiten (9-18 Uhr). Bitte erwähne verfügbare Zeiten.' : $json.reason === 'past_date' ? '\\n\\nHINWEIS: Gewünschter Termin liegt in der Vergangenheit.' : '')\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "options": {}
+      },
+      "id": "openai-no-booking",
+      "name": "OpenAI No Booking",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 280],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credential-id",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "requestMethod": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen MIT TERMINBESTÄTIGUNG. Professioneller Stil, enthusiastisch. Bestätige den gebuchten Termin explizit, Dank für Interesse. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail mit folgenden Kundendaten:\\n===KUNDENDATEN START===\\nName: ' + $json.name + '\\nFirma: ' + $json.company + '\\nNachricht: ' + $json.message + '\\n===KUNDENDATEN ENDE===\\n===TERMINDETAILS START===\\nDatum und Uhrzeit: ' + $json.datetime + '\\nDauer: ' + $json.durationMinutes + ' Minuten\\nZeitzone: ' + $json.timezone + '\\n===TERMINDETAILS ENDE==='\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "options": {}
+      },
+      "id": "openai-available",
+      "name": "OpenAI Termin Available",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, -20],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credential-id",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "requestMethod": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche E-Mail auf Deutsch. Der gewünschte Termin ist NICHT verfügbar. Entschuldige dich höflich, schlage vor dass David Louis alternative Termine anbieten wird. Professioneller Stil. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail für: Name ' + $json.name + ', Firma ' + $json.company + ', Nachricht: ' + $json.message + '\\n\\nGEWÜNSCHTER TERMIN NICHT VERFÜGBAR: ' + new Date($json.datetime).toLocaleString('de-DE', { dateStyle: 'full', timeStyle: 'short', timeZone: $json.timezone }) + '. David Louis wird alternative Terminvorschläge unterbreiten.'\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "options": {}
+      },
+      "id": "openai-not-available",
+      "name": "OpenAI Termin Not Available",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 180],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credential-id",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0]) {\n  throw new Error('Invalid OpenAI response: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail || generatedEmail.trim().length === 0) {\n  throw new Error('OpenAI returned empty response');\n}\nconst suspiciousPatterns = [\n  /bitcoin/i, /hack/i, /crypto/i, /password/i,\n  /credit card/i, /send money/i, /transfer.*money/i,\n  /bank.*account/i, /ignore.*previous/i, /disregard/i\n];\nlet isSuspicious = false;\nlet matchedPattern = '';\nfor (const pattern of suspiciousPatterns) {\n  if (pattern.test(generatedEmail)) {\n    isSuspicious = true;\n    matchedPattern = pattern.toString();\n    break;\n  }\n}\nif (isSuspicious) {\n  throw new Error('SECURITY: Suspicious content detected. Pattern: ' + matchedPattern);\n}\nreturn { json: aiOutput };"
+      },
+      "id": "validate-openai-no-booking",
+      "name": "Validate OpenAI No Booking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0]) {\n  throw new Error('Invalid OpenAI response: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail || generatedEmail.trim().length === 0) {\n  throw new Error('OpenAI returned empty response');\n}\nconst suspiciousPatterns = [\n  /bitcoin/i, /hack/i, /crypto/i, /password/i,\n  /credit card/i, /send money/i, /transfer.*money/i,\n  /bank.*account/i, /ignore.*previous/i, /disregard/i\n];\nlet isSuspicious = false;\nlet matchedPattern = '';\nfor (const pattern of suspiciousPatterns) {\n  if (pattern.test(generatedEmail)) {\n    isSuspicious = true;\n    matchedPattern = pattern.toString();\n    break;\n  }\n}\nif (isSuspicious) {\n  throw new Error('SECURITY: Suspicious content detected. Pattern: ' + matchedPattern);\n}\nreturn { json: aiOutput };"
+      },
+      "id": "validate-openai-available",
+      "name": "Validate OpenAI Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, -20]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0]) {\n  throw new Error('Invalid OpenAI response: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail || generatedEmail.trim().length === 0) {\n  throw new Error('OpenAI returned empty response');\n}\nconst suspiciousPatterns = [\n  /bitcoin/i, /hack/i, /crypto/i, /password/i,\n  /credit card/i, /send money/i, /transfer.*money/i,\n  /bank.*account/i, /ignore.*previous/i, /disregard/i\n];\nlet isSuspicious = false;\nlet matchedPattern = '';\nfor (const pattern of suspiciousPatterns) {\n  if (pattern.test(generatedEmail)) {\n    isSuspicious = true;\n    matchedPattern = pattern.toString();\n    break;\n  }\n}\nif (isSuspicious) {\n  throw new Error('SECURITY: Suspicious content detected. Pattern: ' + matchedPattern);\n}\nreturn { json: aiOutput };"
+      },
+      "id": "validate-openai-not-available",
+      "name": "Validate OpenAI Not Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0] || !aiOutput.choices[0].message) {\n  throw new Error('Invalid AI output structure. Got: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail) {\n  throw new Error('No content in AI response');\n}\nconst checkTimeData = $('Check Time & Prepare').item.json;\nlet subject = 'Ihre Anfrage bei Xyra.Digital';\nconst subjectMatch = generatedEmail.match(/Betreff:\\s*(.+)/i);\nif (subjectMatch) {\n  subject = subjectMatch[1].trim();\n}\nconst body = generatedEmail.replace(/Betreff:\\s*.+\\n*/i, '').trim();\nreturn {\n  json: {\n    to: checkTimeData.email,\n    subject: subject,\n    body: body\n  }\n};"
+      },
+      "id": "prepare-email-no-booking",
+      "name": "Prepare Email No Booking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0] || !aiOutput.choices[0].message) {\n  throw new Error('Invalid AI output structure. Got: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail) {\n  throw new Error('No content in AI response');\n}\nconst checkTimeData = $('Check Time & Prepare').item.json;\nlet subject = 'Terminbestätigung bei Xyra.Digital';\nconst subjectMatch = generatedEmail.match(/Betreff:\\s*(.+)/i);\nif (subjectMatch) {\n  subject = subjectMatch[1].trim();\n}\nconst body = generatedEmail.replace(/Betreff:\\s*.+\\n*/i, '').trim();\nreturn {\n  json: {\n    to: checkTimeData.email,\n    subject: subject,\n    body: body,\n    name: checkTimeData.name,\n    company: checkTimeData.company,\n    message: checkTimeData.message,\n    datetime: checkTimeData.datetime,\n    durationMinutes: checkTimeData.durationMinutes,\n    timezone: checkTimeData.timezone\n  }\n};"
+      },
+      "id": "prepare-email-available",
+      "name": "Prepare Email Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, -20]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json;\nif (!aiOutput || !aiOutput.choices || !aiOutput.choices[0] || !aiOutput.choices[0].message) {\n  throw new Error('Invalid AI output structure. Got: ' + JSON.stringify(aiOutput));\n}\nconst generatedEmail = aiOutput.choices[0].message.content;\nif (!generatedEmail) {\n  throw new Error('No content in AI response');\n}\nconst checkTimeData = $('Check Time & Prepare').item.json;\nlet subject = 'Ihre Anfrage bei Xyra.Digital';\nconst subjectMatch = generatedEmail.match(/Betreff:\\s*(.+)/i);\nif (subjectMatch) {\n  subject = subjectMatch[1].trim();\n}\nconst body = generatedEmail.replace(/Betreff:\\s*.+\\n*/i, '').trim();\nreturn {\n  json: {\n    to: checkTimeData.email,\n    subject: subject,\n    body: body\n  }\n};"
+      },
+      "id": "prepare-email-not-available",
+      "name": "Prepare Email Not Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 180]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "ccList": "david.louis@xyra.digital"
+        }
+      },
+      "id": "gmail-no-booking",
+      "name": "Gmail No Booking",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2000, 280],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "ccList": "david.louis@xyra.digital"
+        }
+      },
+      "id": "gmail-available",
+      "name": "Gmail Available",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2660, -20],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "ccList": "david.louis@xyra.digital"
+        }
+      },
+      "id": "gmail-not-available",
+      "name": "Gmail Not Available",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2660, 180],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailData = $('Prepare Email Available').first().json;\nif (!emailData.datetime) {\n  throw new Error('Missing datetime field. Available fields: ' + Object.keys(emailData).join(', '));\n}\nlet startDate;\ntry {\n  startDate = new Date(emailData.datetime);\n  if (isNaN(startDate.getTime())) {\n    throw new Error('Invalid date: ' + emailData.datetime);\n  }\n} catch (e) {\n  throw new Error('Cannot parse datetime \"' + emailData.datetime + '\": ' + e.message);\n}\nconst durationMinutes = Number(emailData.durationMinutes) || 30;\nconst endDate = new Date(startDate);\nendDate.setMinutes(startDate.getMinutes() + durationMinutes);\nreturn {\n  json: {\n    summary: 'Beratungsgespräch ' + emailData.name + ' ' + emailData.company,\n    description: 'Kontakt: ' + emailData.name + ', Firma: ' + emailData.company + ', E-Mail: ' + emailData.to + ', Nachricht: ' + emailData.message,\n    start: {\n      dateTime: startDate.toISOString(),\n      timeZone: emailData.timezone || 'Europe/Berlin'\n    },\n    end: {\n      dateTime: endDate.toISOString(),\n      timeZone: emailData.timezone || 'Europe/Berlin'\n    },\n    attendees: [{ email: emailData.to }]\n  }\n};"
+      },
+      "id": "prepare-calendar",
+      "name": "Prepare Calendar Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2880, -20]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleCalendarOAuth2Api",
+        "requestMethod": "POST",
+        "url": "https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({\n  summary: $json.summary,\n  description: $json.description,\n  start: {\n    dateTime: $json.start.dateTime,\n    timeZone: $json.start.timeZone\n  },\n  end: {\n    dateTime: $json.end.dateTime,\n    timeZone: $json.end.timeZone\n  },\n  attendees: $json.attendees\n}) }}",
+        "options": {}
+      },
+      "id": "calendar-create",
+      "name": "Google Calendar Create Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3100, -20],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "your-google-calendar-credential-id",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Anfrage erfolgreich gesendet\" } }}",
+        "options": {}
+      },
+      "id": "respond-no-booking",
+      "name": "Respond No Booking",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2220, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Termin nicht verfügbar, Alternative wird angeboten\" } }}",
+        "options": {}
+      },
+      "id": "respond-not-available",
+      "name": "Respond Not Available",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2880, 180]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Termin erfolgreich gebucht\" } }}",
+        "options": {}
+      },
+      "id": "respond-available",
+      "name": "Respond Available",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3320, -20]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{"node": "Validate Input", "type": "main", "index": 0}]]
+    },
+    "Validate Input": {
+      "main": [[{"node": "Check Validation", "type": "main", "index": 0}]]
+    },
+    "Check Validation": {
+      "main": [
+        [{"node": "Check Time & Prepare", "type": "main", "index": 0}],
+        [{"node": "Respond Validation Error", "type": "main", "index": 0}]
+      ]
+    },
+    "Check Time & Prepare": {
+      "main": [[{"node": "Valid Booking Request?", "type": "main", "index": 0}]]
+    },
+    "Valid Booking Request?": {
+      "main": [
+        [{"node": "Google Calendar Get Availability", "type": "main", "index": 0}],
+        [{"node": "OpenAI No Booking", "type": "main", "index": 0}]
+      ]
+    },
+    "Google Calendar Get Availability": {
+      "main": [[{"node": "Check Availability", "type": "main", "index": 0}]]
+    },
+    "Check Availability": {
+      "main": [[{"node": "Time Slot Free?", "type": "main", "index": 0}]]
+    },
+    "Time Slot Free?": {
+      "main": [
+        [{"node": "OpenAI Termin Available", "type": "main", "index": 0}],
+        [{"node": "OpenAI Termin Not Available", "type": "main", "index": 0}]
+      ]
+    },
+    "OpenAI No Booking": {
+      "main": [[{"node": "Validate OpenAI No Booking", "type": "main", "index": 0}]]
+    },
+    "OpenAI Termin Available": {
+      "main": [[{"node": "Validate OpenAI Available", "type": "main", "index": 0}]]
+    },
+    "OpenAI Termin Not Available": {
+      "main": [[{"node": "Validate OpenAI Not Available", "type": "main", "index": 0}]]
+    },
+    "Validate OpenAI No Booking": {
+      "main": [[{"node": "Prepare Email No Booking", "type": "main", "index": 0}]]
+    },
+    "Validate OpenAI Available": {
+      "main": [[{"node": "Prepare Email Available", "type": "main", "index": 0}]]
+    },
+    "Validate OpenAI Not Available": {
+      "main": [[{"node": "Prepare Email Not Available", "type": "main", "index": 0}]]
+    },
+    "Prepare Email No Booking": {
+      "main": [[{"node": "Gmail No Booking", "type": "main", "index": 0}]]
+    },
+    "Prepare Email Available": {
+      "main": [[{"node": "Gmail Available", "type": "main", "index": 0}]]
+    },
+    "Prepare Email Not Available": {
+      "main": [[{"node": "Gmail Not Available", "type": "main", "index": 0}]]
+    },
+    "Gmail No Booking": {
+      "main": [[{"node": "Respond No Booking", "type": "main", "index": 0}]]
+    },
+    "Gmail Available": {
+      "main": [[{"node": "Prepare Calendar Event", "type": "main", "index": 0}]]
+    },
+    "Gmail Not Available": {
+      "main": [[{"node": "Respond Not Available", "type": "main", "index": 0}]]
+    },
+    "Prepare Calendar Event": {
+      "main": [[{"node": "Google Calendar Create Event", "type": "main", "index": 0}]]
+    },
+    "Google Calendar Create Event": {
+      "main": [[{"node": "Respond Available", "type": "main", "index": 0}]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-29T22:30:00.000Z",
+  "versionId": "4"
+}
