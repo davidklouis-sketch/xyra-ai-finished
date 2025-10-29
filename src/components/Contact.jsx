@@ -45,24 +45,41 @@ const Contact = () => {
             email: formData.email,
             company: formData.company,
             message: formData.message,
-            schedule: {
-              datetime: formData.datetime,
-              durationMinutes: Number(formData.duration || 0),
-              timezone: formData.timezone,
-              bookDirect: Boolean(formData.bookDirect),
-            },
-            timestamp: new Date().toISOString(),
+            datetime: formData.datetime,
+            durationMinutes: Number(formData.duration || 30),
+            timezone: formData.timezone,
+            bookDirect: Boolean(formData.bookDirect),
+            honeypot: '', // Bot detection field
           }),
         })
+
+        const data = await response.json()
 
         if (response.ok) {
           setStatus({
             type: 'success',
-            message: 'Thank you for your interest! We\'ll reach out as we approach launch.',
+            message: data.message || 'Thank you for your message! We\'ll get back to you soon.',
           })
-          setFormData({ name: '', email: '', company: '', message: '' })
+          setFormData({
+            name: '',
+            email: '',
+            company: '',
+            message: '',
+            datetime: '',
+            duration: '30',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+            bookDirect: false,
+          })
         } else {
-          throw new Error('Failed to submit form')
+          // Handle validation errors from n8n
+          if (data.error === 'validation_failed') {
+            setStatus({
+              type: 'error',
+              message: data.message || 'Please check your input and try again.',
+            })
+          } else {
+            throw new Error(data.message || 'Failed to submit form')
+          }
         }
       } catch (error) {
         console.error('Error submitting form:', error)
@@ -80,7 +97,16 @@ const Contact = () => {
           type: 'success',
           message: 'Thank you for your interest! We\'ll reach out as we approach launch.',
         })
-        setFormData({ name: '', email: '', company: '', message: '' })
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          message: '',
+          datetime: '',
+          duration: '30',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+          bookDirect: false,
+        })
         setIsSubmitting(false)
       }, 1500)
     }
