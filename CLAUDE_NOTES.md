@@ -341,14 +341,31 @@ theme: {
 
 ## 🚨 Bekannte Issues & Lösungen
 
-### Problem: 404 nach Deployment
-**Ursache:** Traefik registriert Container-Route nicht automatisch
-**Lösung:**
+### Problem: 404 nach Deployment (GELÖST ✅)
+**Root Cause:** Traefik filtert Container im "starting" Status (Health-Check läuft noch)
+- Container startet → Health-Check läuft (30s)
+- CD-Script endete VOR Health-Check → Traefik sieht Container nicht
+- Keine Route registriert → 404
+
+**Lösung (implementiert in Commit 142268b):**
+1. **Health-Check Wait Loop** im CD-Script:
+   ```bash
+   # Wait for website container to become healthy (max 60s)
+   for i in {1..12}; do
+     if docker inspect app-website-1 --format='{{.State.Health.Status}}' | grep -q "healthy"; then
+       break
+     fi
+     sleep 5
+   done
+   ```
+2. **Persistent .env File** auf Server: `DOMAIN=xyra.digital`, `TRAEFIK_EMAIL=...`
+3. **Rsync .env**: .env wird automatisch deployed
+
+**Manueller Fix (falls nötig):**
 ```bash
-docker compose restart
-# ODER mit Env-Vars:
 export DOMAIN=xyra.digital && export TRAEFIK_EMAIL=david.louis@xyra.digital
-docker compose up -d --force-recreate
+docker compose restart
+# Warte 30-35 Sekunden auf Health-Check
 ```
 
 ### Problem: Änderungen nicht sichtbar nach Force-Reload
