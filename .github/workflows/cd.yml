@@ -82,6 +82,6 @@ jobs:
             export TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}
             export GITHUB_REPOSITORY=${{ github.repository }}
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker compose pull || true
-            docker compose up -d --build
+            docker compose pull
+            docker compose up -d
             docker image prune -f
