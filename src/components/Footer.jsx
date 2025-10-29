@@ -1,5 +1,5 @@
 import React from 'react'
-import { Github, Linkedin, Twitter, Mail } from 'lucide-react'
+import { Linkedin, Twitter, Mail } from 'lucide-react'
 import Logo from './Logo'
 
 const Footer = () => {
@@ -34,7 +34,6 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: Twitter, href: 'https://x.com/Xyra_Digital', label: 'X (Twitter)' },
-    { icon: Github, href: 'https://github.com', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:david.louis@xyra.digital', label: 'Email' },
   ]
