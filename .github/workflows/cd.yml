@@ -53,7 +53,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: |
             docker-compose.yml
-            traefik/**
+            traefik
           target: ${{ secrets.REMOTE_DIR }}
 
       - name: Deploy via SSH (docker compose up)
