@@ -1,0 +1,315 @@
+{
+  "name": "Xyra.Digital Contact Form Handler (HTTP Request)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-form",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "webhookId": "xyra-contact-form"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "name",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "value": "={{ $json.body.company || 'nicht angegeben' }}",
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            },
+            {
+              "id": "datetime",
+              "name": "datetime",
+              "value": "={{ $json.body.schedule?.datetime || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "duration",
+              "name": "durationMinutes",
+              "value": "={{ $json.body.schedule?.durationMinutes || 30 }}",
+              "type": "number"
+            },
+            {
+              "id": "timezone",
+              "name": "timezone",
+              "value": "={{ $json.body.schedule?.timezone || 'Europe/Berlin' }}",
+              "type": "string"
+            },
+            {
+              "id": "bookDirect",
+              "name": "bookDirect",
+              "value": "={{ $json.body.schedule?.bookDirect || false }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-data",
+      "name": "Extract Form Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ {\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Du bist ein professioneller Assistent von Xyra.Digital. Formuliere eine kurze, freundliche Bestätigungs-E-Mail auf Deutsch für Kontaktanfragen. Stil: professionell aber nicht zu förmlich, enthusiastisch über die Zusammenarbeit.\\n\\nWichtige Punkte:\\n- Bestätige den Empfang der Anfrage\\n- Bedanke dich für das Interesse\\n- Erwähne dass sich David Louis zeitnah meldet (innerhalb 24h)\\n- Falls ein Termin gewünscht wurde, bestätige diesen\\n- Halte die Mail kurz (max 150 Wörter)\\n- Verwende eine warme, persönliche Anrede\\n- Signatur: Viele Grüße, Das Xyra.Digital Team\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Erstelle eine Bestätigungs-E-Mail für folgende Anfrage:\\n\\nName: \" + $json.name + \"\\nFirma: \" + $json.company + \"\\nNachricht: \" + $json.message + \"\\n\" + ($json.bookDirect ? ('Terminwunsch: ' + $json.datetime + ' (' + $json.durationMinutes + ' Minuten, ' + $json.timezone + ')') : 'Kein direkter Terminwunsch')\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 500\n} }}",
+        "options": {}
+      },
+      "id": "http-openai",
+      "name": "HTTP Request - OpenAI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "toRecipients": "={{ $('Extract Form Data').item.json.email }}",
+        "subject": "Vielen Dank für Ihre Anfrage – Xyra.Digital",
+        "bodyContent": "={{ $json.choices[0].message.content }}",
+        "additionalFields": {
+          "ccRecipients": "",
+          "bccRecipients": "david.louis@xyra.digital",
+          "importance": "normal",
+          "isRead": false,
+          "saveToSentItems": true
+        }
+      },
+      "id": "outlook-send-mail",
+      "name": "Outlook - Send Confirmation",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2.1,
+      "position": [850, 200],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "outlook-credentials",
+          "name": "Microsoft Outlook OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "bookdirect-check",
+              "leftValue": "={{ $('Extract Form Data').item.json.bookDirect }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "datetime-check",
+              "leftValue": "={{ $('Extract Form Data').item.json.datetime }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-booking",
+      "name": "Check if Booking Requested",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "operation": "create",
+        "subject": "=Meeting: {{ $('Extract Form Data').item.json.name }}{{ $('Extract Form Data').item.json.company !== 'nicht angegeben' ? ' (' + $('Extract Form Data').item.json.company + ')' : '' }}",
+        "start": "={{ $('Extract Form Data').item.json.datetime }}",
+        "end": "={{ $dateTime($('Extract Form Data').item.json.datetime).plus($('Extract Form Data').item.json.durationMinutes, 'minutes').toISO() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Extract Form Data').item.json.email }}"
+          ],
+          "body": "=Kontaktanfrage über xyra.digital:\n\n{{ $('Extract Form Data').item.json.message }}\n\n---\nKontaktdaten:\nE-Mail: {{ $('Extract Form Data').item.json.email }}\nFirma: {{ $('Extract Form Data').item.json.company }}\nName: {{ $('Extract Form Data').item.json.name }}",
+          "location": "Online (Details folgen per E-Mail)",
+          "isReminderOn": true,
+          "reminderMinutesBeforeStart": 15,
+          "importance": "normal",
+          "showAs": "busy",
+          "timeZone": "={{ $('Extract Form Data').item.json.timezone }}"
+        }
+      },
+      "id": "outlook-create-event",
+      "name": "Outlook - Create Calendar Event",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2.1,
+      "position": [1050, 500],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "outlook-credentials",
+          "name": "Microsoft Outlook OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Thank you! We'll be in touch soon.\" } }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-response",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Form Data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Outlook - Send Confirmation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Booking Requested",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Booking Requested": {
+      "main": [
+        [
+          {
+            "node": "Outlook - Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outlook - Send Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outlook - Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-29T15:30:00.000Z",
+  "versionId": "2"
+}
