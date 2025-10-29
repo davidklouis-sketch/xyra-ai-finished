@@ -319,9 +319,18 @@ theme: {
 - **Legal Links:** /legal/impressum.html, /legal/datenschutz.html, etc.
 
 ### Logo.jsx
-- **SVG Component:** Neon Ring Logo
-- **Colors:** Gradient von primary zu cyan
+- **SVG Component:** X-basiertes Digital Logo (Update: 2025-10-29)
+- **Design:** X-Form mit digitalem Rahmen, Pixel-Akzenten, Glow-Effekt
+- **Colors:** Linear Gradient (#00ff88 → #00d9ff)
+- **Features:**
+  - Digital square frame (opacity 0.3)
+  - X-shaped centerpiece mit Glow-Filter
+  - Pixel corner accents (8x8 squares, opacity 0.6)
+  - Connecting grid lines (opacity 0.2)
+  - Center core circle (r=8, opacity 0.9)
 - **Props:** className (für Größe/Animation)
+- **Social Media:** public/logo-social.svg (standalone SVG)
+- **Favicon:** public/favicon.svg (same design)
 
 ## 🔐 Legal Pages (Static HTML)
 
@@ -367,6 +376,46 @@ export DOMAIN=xyra.digital && export TRAEFIK_EMAIL=david.louis@xyra.digital
 docker compose restart
 # Warte 30-35 Sekunden auf Health-Check
 ```
+
+### Problem: Traefik lädt Docker-Konfiguration nicht automatisch (GELÖST ✅)
+**Root Cause:** Nach Deployment lädt Traefik manchmal nicht automatisch die neuen Container-Labels
+- Container ist "healthy" und läuft
+- Container-Labels sind korrekt gesetzt
+- Traefik zeigt keine "Configuration received from provider docker" Log-Message
+- Routes werden nicht registriert → 404
+
+**Symptome:**
+```bash
+# Container ist healthy
+docker compose ps  # → app-website-1: Up XX seconds (healthy)
+
+# Aber Traefik hat keine Routes
+docker compose logs traefik | grep "Configuration received"  # → Keine docker provider messages
+```
+
+**Lösung:**
+```bash
+cd /home/dlouis/app
+docker compose restart traefik
+# Warte 5-10 Sekunden auf Docker-Provider-Reload
+```
+
+**Debug (falls nötig):**
+```bash
+# 1. Enable DEBUG logging temporär
+# docker-compose.yml: --log.level=DEBUG
+
+# 2. Restart Traefik
+docker compose up -d --force-recreate traefik
+
+# 3. Check logs für Configuration
+docker compose logs traefik | grep -E "Configuration received|router|website"
+
+# 4. Zurück auf INFO logging
+# docker-compose.yml: --log.level=INFO
+```
+
+**Seit:** 2025-10-29 (Logo-Update Deployment)
 
 ### Problem: Änderungen nicht sichtbar nach Force-Reload
 **Ursache:** Änderungen nicht committed/gepusht
