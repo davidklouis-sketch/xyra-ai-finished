@@ -45,17 +45,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Sync files to server via rsync
-        uses: burnett01/rsync-deployments@7.1.5
-        with:
-          switches: -avzr --delete
-          path: |
-            docker-compose.yml
-            traefik/
-          remote_path: ${{ secrets.REMOTE_DIR }}
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_KEY }}
+      - name: Prepare SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Rsync files to server
+        shell: bash
+        run: |
+          rsync -avzr --delete \
+            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes" \
+            ./docker-compose.yml ./traefik/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_DIR }}/"
 
       - name: Deploy via SSH (docker compose up)
         uses: appleboy/ssh-action@v1.2.0
