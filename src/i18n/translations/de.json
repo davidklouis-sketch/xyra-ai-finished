@@ -39,7 +39,7 @@
     }
   },
   "features": {
-    "heading": "Warum Xyra.Ai",
+    "heading": "Warum Xyra.Media",
     "subheading": "Pragmatische KI, die ausliefert – mit Leitplanken, Observability und der UX, die Ihre Nutzer erwarten.",
     "outcomesTitle": "Wirkung, die zählt",
     "outcomesSubtitle": "Wir fokussieren messbare Wirkung: Umsatz, Kosten und Kundenerlebnis – ohne Spielereien.",
@@ -129,7 +129,7 @@
     },
     "submit": {
       "success": "Danke für dein Interesse! Wir melden uns zeitnah.",
-      "error": "Etwas ist schiefgelaufen. Bitte erneut versuchen oder an hello@xyra.ai mailen."
+      "error": "Etwas ist schiefgelaufen. Bitte erneut versuchen oder an david.louis@xyra.digital mailen."
     },
     "placeholders": {
       "name": "Max Mustermann",

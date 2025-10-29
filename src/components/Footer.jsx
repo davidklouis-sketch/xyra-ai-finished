@@ -52,7 +52,7 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-4">
               <Logo className="w-10 h-10" />
               <span className="text-2xl font-bold">
-                xyra<span className="text-primary">.ai</span>
+                Xyra<span className="text-primary">.Media</span>
               </span>
             </div>
             <p className="text-gray-400 mb-6">
@@ -98,7 +98,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-dark-lighter">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm text-center md:text-left">
-              © {currentYear} xyra.ai. All rights reserved.
+              © {currentYear} Xyra.Media. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm">
               <a href="/legal/impressum.html" className="text-gray-400 hover:text-primary transition-colors duration-300">

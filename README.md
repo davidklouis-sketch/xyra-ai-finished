@@ -1,4 +1,4 @@
-## xyra.ai — AI for Music & Creators
+## Xyra.Media — AI for Music & Creators
 
 A Vite + React + Tailwind landing with i18n (DE-first) focused on the music industry and creator economy. Sections include Hero, Services, Features, Pricing, Contact, and German-compliant legal pages.
 

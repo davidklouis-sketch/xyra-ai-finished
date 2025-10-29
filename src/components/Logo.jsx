@@ -2,7 +2,7 @@ import React from 'react'
 
 const Logo = ({ className = "w-10 h-10" }) => {
   return (
-    <svg className={className} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="xyra.ai logo - neon ring">
+    <svg className={className} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Xyra.Media logo - neon ring">
       <defs>
         <radialGradient id="glow" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#00ff88" stopOpacity="0.5" />
