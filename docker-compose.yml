@@ -28,7 +28,7 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.website.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.website.rule=Host(`${DOMAIN:-xyra.digital}`)"
       - "traefik.http.routers.website.entrypoints=web,websecure"
       - "traefik.http.routers.website.tls=true"
       - "traefik.http.routers.website.tls.certresolver=letsencrypt"
