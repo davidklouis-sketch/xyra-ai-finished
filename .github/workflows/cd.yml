@@ -80,11 +80,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             set -e
-            mkdir -p ${{ secrets.REMOTE_DIR }}/app
             cd ${{ secrets.REMOTE_DIR }}/app
             export DOMAIN=${{ secrets.DOMAIN }}
             export TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker compose pull
-            docker compose up -d
+            docker compose pull --quiet || true
+            docker compose up -d --force-recreate
+            docker compose ps
             docker image prune -f
