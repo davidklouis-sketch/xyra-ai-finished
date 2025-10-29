@@ -56,7 +56,7 @@ const Navbar = () => {
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center gap-3 group">
             <Logo className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
             <span className="text-2xl font-bold tracking-tight">
-              Xyra<span className="text-primary">.Media</span>
+              Xyra<span className="text-primary">.Digital</span>
             </span>
           </a>
 
