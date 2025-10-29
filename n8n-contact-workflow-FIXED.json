@@ -17,7 +17,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $input.item.json.body;\nlet validationErrors = [];\n\nfunction isValidEmail(email) {\n  const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;\n  return regex.test(email);\n}\n\nif (!data.email || typeof data.email !== 'string') {\n  validationErrors.push('Email is required');\n} else {\n  const emailLower = data.email.toLowerCase().trim();\n  if (!isValidEmail(emailLower)) {\n    validationErrors.push('Invalid email format');\n  } else if (emailLower.length > 254) {\n    validationErrors.push('Email too long');\n  } else {\n    const invalidPatterns = [\n      /^test@test\\./i, /^admin@admin\\./i, /^noreply@/i,\n      /^no-reply@/i, /@example\\./i, /@test\\./i,\n      /@localhost/i, /@invalid\\./i\n    ];\n    let hasInvalidPattern = false;\n    for (const pattern of invalidPatterns) {\n      if (pattern.test(emailLower)) {\n        validationErrors.push('Invalid email address');\n        hasInvalidPattern = true;\n        break;\n      }\n    }\n    if (!hasInvalidPattern) {\n      const disposableDomains = [\n        'tempmail.com', '10minutemail.com', 'guerrillamail.com',\n        'mailinator.com', 'throwaway.email', 'getnada.com',\n        'temp-mail.org', 'trashmail.com'\n      ];\n      const emailDomain = emailLower.split('@')[1];\n      if (disposableDomains.includes(emailDomain)) {\n        validationErrors.push('Disposable email addresses are not allowed');\n      }\n    }\n  }\n}\n\nif (data.honeypot && data.honeypot.length > 0) {\n  validationErrors.push('Bot detected');\n}\n\nif (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {\n  validationErrors.push('Name is required');\n} else if (data.name.trim().length < 2) {\n  validationErrors.push('Name must be at least 2 characters');\n}\n\nfunction sanitizeInput(text) {\n  if (!text) return '';\n  const dangerousPhrases = [\n    'ignore all previous', 'ignore above', 'system:',\n    'assistant:', 'new instructions', 'disregard',\n    'forget everything'\n  ];\n  let cleaned = String(text);\n  for (const phrase of dangerousPhrases) {\n    cleaned = cleaned.replace(new RegExp(phrase, 'gi'), '[REMOVED]');\n  }\n  return cleaned;\n}\n\nconst isValid = validationErrors.length === 0;\nconst emailLower = data.email ? data.email.toLowerCase().trim() : '';\n\nreturn {\n  json: {\n    isValid: isValid,\n    validationErrors: validationErrors,\n    name: sanitizeInput(data.name || '').substring(0, 100),\n    email: emailLower,\n    company: sanitizeInput(data.company || '').substring(0, 100),\n    message: sanitizeInput(data.message || '').substring(0, 1000),\n    datetime: data.datetime || '',\n    durationMinutes: Math.min(Math.max(Number(data.durationMinutes) || 30, 15), 120),\n    timezone: data.timezone || 'Europe/Berlin',\n    bookDirect: Boolean(data.bookDirect)\n  }\n};"
+        "jsCode": "const data = $input.item.json;\nlet validationErrors = [];\n\nfunction isValidEmail(email) {\n  const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;\n  return regex.test(email);\n}\n\nif (!data.email || typeof data.email !== 'string') {\n  validationErrors.push('Email is required');\n} else {\n  const emailLower = data.email.toLowerCase().trim();\n  if (!isValidEmail(emailLower)) {\n    validationErrors.push('Invalid email format');\n  } else if (emailLower.length > 254) {\n    validationErrors.push('Email too long');\n  } else {\n    const invalidPatterns = [\n      /^test@test\\./i, /^admin@admin\\./i, /^noreply@/i,\n      /^no-reply@/i, /@example\\./i, /@test\\./i,\n      /@localhost/i, /@invalid\\./i\n    ];\n    let hasInvalidPattern = false;\n    for (const pattern of invalidPatterns) {\n      if (pattern.test(emailLower)) {\n        validationErrors.push('Invalid email address');\n        hasInvalidPattern = true;\n        break;\n      }\n    }\n    if (!hasInvalidPattern) {\n      const disposableDomains = [\n        'tempmail.com', '10minutemail.com', 'guerrillamail.com',\n        'mailinator.com', 'throwaway.email', 'getnada.com',\n        'temp-mail.org', 'trashmail.com'\n      ];\n      const emailDomain = emailLower.split('@')[1];\n      if (disposableDomains.includes(emailDomain)) {\n        validationErrors.push('Disposable email addresses are not allowed');\n      }\n    }\n  }\n}\n\nif (data.honeypot && data.honeypot.length > 0) {\n  validationErrors.push('Bot detected');\n}\n\nif (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {\n  validationErrors.push('Name is required');\n} else if (data.name.trim().length < 2) {\n  validationErrors.push('Name must be at least 2 characters');\n}\n\nfunction sanitizeInput(text) {\n  if (!text) return '';\n  const dangerousPhrases = [\n    'ignore all previous', 'ignore above', 'system:',\n    'assistant:', 'new instructions', 'disregard',\n    'forget everything'\n  ];\n  let cleaned = String(text);\n  for (const phrase of dangerousPhrases) {\n    cleaned = cleaned.replace(new RegExp(phrase, 'gi'), '[REMOVED]');\n  }\n  return cleaned;\n}\n\nconst isValid = validationErrors.length === 0;\nconst emailLower = data.email ? data.email.toLowerCase().trim() : '';\n\nreturn {\n  json: {\n    isValid: isValid,\n    validationErrors: validationErrors,\n    name: sanitizeInput(data.name || '').substring(0, 100),\n    email: emailLower,\n    company: sanitizeInput(data.company || '').substring(0, 100),\n    message: sanitizeInput(data.message || '').substring(0, 1000),\n    datetime: data.datetime || '',\n    durationMinutes: Math.min(Math.max(Number(data.durationMinutes) || 30, 15), 120),\n    timezone: data.timezone || 'Europe/Berlin',\n    bookDirect: Boolean(data.bookDirect)\n  }\n};"
       },
       "id": "validate-input",
       "name": "Validate Input",
@@ -59,7 +59,7 @@
       "parameters": {
         "respondWith": "json",
         "responseCode": 400,
-        "responseBody": "={{ JSON.stringify({ success: false, error: 'validation_failed', message: $json.validationErrors.join(', ') }) }}",
+        "responseBody": "={{ { success: false, error: 'validation_failed', message: $json.validationErrors.join(', ') } }}",
         "options": {}
       },
       "id": "respond-validation-error",
@@ -440,7 +440,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, message: 'Anfrage erfolgreich gesendet' }) }}",
+        "responseBody": "={{ { success: true, message: 'Anfrage erfolgreich gesendet' } }}",
         "options": {}
       },
       "id": "respond-no-booking",
@@ -452,7 +452,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, message: 'Termin nicht verfügbar, Alternative wird angeboten' }) }}",
+        "responseBody": "={{ { success: true, message: 'Termin nicht verfügbar, Alternative wird angeboten' } }}",
         "options": {}
       },
       "id": "respond-not-available",
@@ -464,7 +464,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, message: 'Termin erfolgreich gebucht' }) }}",
+        "responseBody": "={{ { success: true, message: 'Termin erfolgreich gebucht' } }}",
         "options": {}
       },
       "id": "respond-available",
