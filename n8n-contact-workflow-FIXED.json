@@ -59,7 +59,7 @@
       "parameters": {
         "respondWith": "json",
         "responseCode": 400,
-        "responseBody": "={{ { \"success\": false, \"error\": \"validation_failed\", \"message\": $json.validationErrors.join(\", \") } }}",
+        "responseBody": "={{ JSON.stringify({ success: false, error: 'validation_failed', message: $json.validationErrors.join(', ') }) }}",
         "options": {}
       },
       "id": "respond-validation-error",
@@ -171,20 +171,30 @@
     },
     {
       "parameters": {
+        "jsCode": "const data = $input.item.json;\nconst systemMessage = 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen. Professioneller Stil, enthusiastisch. Bestätigung des Empfangs, Dank für Interesse, David Louis meldet sich in 24h. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team';\n\nlet userMessage = `Erstelle eine E-Mail für: Name ${data.name}, Firma ${data.company}, Nachricht: ${data.message}`;\n\nif (data.reason === 'outside_business_hours') {\n  userMessage += '\\n\\nHINWEIS: Gewünschter Termin außerhalb unserer Geschäftszeiten (9-18 Uhr). Bitte erwähne verfügbare Zeiten.';\n} else if (data.reason === 'past_date') {\n  userMessage += '\\n\\nHINWEIS: Gewünschter Termin liegt in der Vergangenheit.';\n}\n\nreturn {\n  json: {\n    model: 'gpt-4o-mini',\n    messages: [\n      { role: 'system', content: systemMessage },\n      { role: 'user', content: userMessage }\n    ],\n    temperature: 0.7\n  }\n};"
+      },
+      "id": "prepare-openai-no-booking",
+      "name": "Prepare OpenAI Request No Booking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 280]
+    },
+    {
+      "parameters": {
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "openAiApi",
         "requestMethod": "POST",
         "url": "https://api.openai.com/v1/chat/completions",
         "sendBody": true,
         "contentType": "json",
-        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen. Professioneller Stil, enthusiastisch. Bestätigung des Empfangs, Dank für Interesse, David Louis meldet sich in 24h. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail für: Name ' + $json.name + ', Firma ' + $json.company + ', Nachricht: ' + $json.message + ($json.reason === 'outside_business_hours' ? '\\n\\nHINWEIS: Gewünschter Termin außerhalb unserer Geschäftszeiten (9-18 Uhr). Bitte erwähne verfügbare Zeiten.' : $json.reason === 'past_date' ? '\\n\\nHINWEIS: Gewünschter Termin liegt in der Vergangenheit.' : '')\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "jsonBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
       "id": "openai-no-booking",
       "name": "OpenAI No Booking",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1340, 280],
+      "position": [1560, 280],
       "credentials": {
         "openAiApi": {
           "id": "your-openai-credential-id",
@@ -194,20 +204,30 @@
     },
     {
       "parameters": {
+        "jsCode": "const data = $input.item.json;\nconst systemMessage = 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen MIT TERMINBESTÄTIGUNG. Professioneller Stil, enthusiastisch. Bestätige den gebuchten Termin explizit, Dank für Interesse. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team';\n\nconst userMessage = `Erstelle eine E-Mail mit folgenden Kundendaten:\n===KUNDENDATEN START===\nName: ${data.name}\nFirma: ${data.company}\nNachricht: ${data.message}\n===KUNDENDATEN ENDE===\n===TERMINDETAILS START===\nDatum und Uhrzeit: ${data.datetime}\nDauer: ${data.durationMinutes} Minuten\nZeitzone: ${data.timezone}\n===TERMINDETAILS ENDE===`;\n\nreturn {\n  json: {\n    model: 'gpt-4o-mini',\n    messages: [\n      { role: 'system', content: systemMessage },\n      { role: 'user', content: userMessage }\n    ],\n    temperature: 0.7\n  }\n};"
+      },
+      "id": "prepare-openai-available",
+      "name": "Prepare OpenAI Request Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, -20]
+    },
+    {
+      "parameters": {
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "openAiApi",
         "requestMethod": "POST",
         "url": "https://api.openai.com/v1/chat/completions",
         "sendBody": true,
         "contentType": "json",
-        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche Bestätigung auf Deutsch für Kontaktanfragen MIT TERMINBESTÄTIGUNG. Professioneller Stil, enthusiastisch. Bestätige den gebuchten Termin explizit, Dank für Interesse. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail mit folgenden Kundendaten:\\n===KUNDENDATEN START===\\nName: ' + $json.name + '\\nFirma: ' + $json.company + '\\nNachricht: ' + $json.message + '\\n===KUNDENDATEN ENDE===\\n===TERMINDETAILS START===\\nDatum und Uhrzeit: ' + $json.datetime + '\\nDauer: ' + $json.durationMinutes + ' Minuten\\nZeitzone: ' + $json.timezone + '\\n===TERMINDETAILS ENDE==='\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "jsonBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
       "id": "openai-available",
       "name": "OpenAI Termin Available",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2000, -20],
+      "position": [2220, -20],
       "credentials": {
         "openAiApi": {
           "id": "your-openai-credential-id",
@@ -217,20 +237,30 @@
     },
     {
       "parameters": {
+        "jsCode": "const data = $input.item.json;\nconst systemMessage = 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche E-Mail auf Deutsch. Der gewünschte Termin ist NICHT verfügbar. Entschuldige dich höflich, schlage vor dass David Louis alternative Termine anbieten wird. Professioneller Stil. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team';\n\nconst dateFormatted = new Date(data.datetime).toLocaleString('de-DE', { \n  dateStyle: 'full', \n  timeStyle: 'short', \n  timeZone: data.timezone \n});\n\nconst userMessage = `Erstelle eine E-Mail für: Name ${data.name}, Firma ${data.company}, Nachricht: ${data.message}\n\nGEWÜNSCHTER TERMIN NICHT VERFÜGBAR: ${dateFormatted}. David Louis wird alternative Terminvorschläge unterbreiten.`;\n\nreturn {\n  json: {\n    model: 'gpt-4o-mini',\n    messages: [\n      { role: 'system', content: systemMessage },\n      { role: 'user', content: userMessage }\n    ],\n    temperature: 0.7\n  }\n};"
+      },
+      "id": "prepare-openai-not-available",
+      "name": "Prepare OpenAI Request Not Available",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 180]
+    },
+    {
+      "parameters": {
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "openAiApi",
         "requestMethod": "POST",
         "url": "https://api.openai.com/v1/chat/completions",
         "sendBody": true,
         "contentType": "json",
-        "jsonBody": "={{ JSON.stringify({\n  model: 'gpt-4o-mini',\n  messages: [\n    {\n      role: 'system',\n      content: 'Du bist ein professioneller Assistent von Xyra.Digital. Schreibe eine kurze, freundliche E-Mail auf Deutsch. Der gewünschte Termin ist NICHT verfügbar. Entschuldige dich höflich, schlage vor dass David Louis alternative Termine anbieten wird. Professioneller Stil. Kurz halten (max 150 Wörter). Signatur: Viele Grüße, Das Xyra.Digital Team'\n    },\n    {\n      role: 'user',\n      content: 'Erstelle eine E-Mail für: Name ' + $json.name + ', Firma ' + $json.company + ', Nachricht: ' + $json.message + '\\n\\nGEWÜNSCHTER TERMIN NICHT VERFÜGBAR: ' + new Date($json.datetime).toLocaleString('de-DE', { dateStyle: 'full', timeStyle: 'short', timeZone: $json.timezone }) + '. David Louis wird alternative Terminvorschläge unterbreiten.'\n    }\n  ],\n  temperature: 0.7\n}) }}",
+        "jsonBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
       "id": "openai-not-available",
       "name": "OpenAI Termin Not Available",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2000, 180],
+      "position": [2220, 180],
       "credentials": {
         "openAiApi": {
           "id": "your-openai-credential-id",
@@ -246,7 +276,7 @@
       "name": "Validate OpenAI No Booking",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1560, 280]
+      "position": [1780, 280]
     },
     {
       "parameters": {
@@ -256,7 +286,7 @@
       "name": "Validate OpenAI Available",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2220, -20]
+      "position": [2440, -20]
     },
     {
       "parameters": {
@@ -266,7 +296,7 @@
       "name": "Validate OpenAI Not Available",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2220, 180]
+      "position": [2440, 180]
     },
     {
       "parameters": {
@@ -276,7 +306,7 @@
       "name": "Prepare Email No Booking",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1780, 280]
+      "position": [2000, 280]
     },
     {
       "parameters": {
@@ -286,7 +316,7 @@
       "name": "Prepare Email Available",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2440, -20]
+      "position": [2660, -20]
     },
     {
       "parameters": {
@@ -296,7 +326,7 @@
       "name": "Prepare Email Not Available",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2440, 180]
+      "position": [2660, 180]
     },
     {
       "parameters": {
@@ -312,7 +342,7 @@
       "name": "Gmail No Booking",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [2000, 280],
+      "position": [2220, 280],
       "credentials": {
         "gmailOAuth2": {
           "id": "your-gmail-credential-id",
@@ -334,7 +364,7 @@
       "name": "Gmail Available",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [2660, -20],
+      "position": [2880, -20],
       "credentials": {
         "gmailOAuth2": {
           "id": "your-gmail-credential-id",
@@ -356,7 +386,7 @@
       "name": "Gmail Not Available",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [2660, 180],
+      "position": [2880, 180],
       "credentials": {
         "gmailOAuth2": {
           "id": "your-gmail-credential-id",
@@ -372,7 +402,7 @@
       "name": "Prepare Calendar Event",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2880, -20]
+      "position": [3100, -20]
     },
     {
       "parameters": {
@@ -389,7 +419,7 @@
       "name": "Google Calendar Create Event",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [3100, -20],
+      "position": [3320, -20],
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "your-google-calendar-credential-id",
@@ -400,38 +430,38 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { \"success\": true, \"message\": \"Anfrage erfolgreich gesendet\" } }}",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Anfrage erfolgreich gesendet' }) }}",
         "options": {}
       },
       "id": "respond-no-booking",
       "name": "Respond No Booking",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2220, 280]
+      "position": [2440, 280]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { \"success\": true, \"message\": \"Termin nicht verfügbar, Alternative wird angeboten\" } }}",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Termin nicht verfügbar, Alternative wird angeboten' }) }}",
         "options": {}
       },
       "id": "respond-not-available",
       "name": "Respond Not Available",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2880, 180]
+      "position": [3100, 180]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { \"success\": true, \"message\": \"Termin erfolgreich gebucht\" } }}",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Termin erfolgreich gebucht' }) }}",
         "options": {}
       },
       "id": "respond-available",
       "name": "Respond Available",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [3320, -20]
+      "position": [3540, -20]
     }
   ],
   "connections": {
@@ -453,7 +483,7 @@
     "Valid Booking Request?": {
       "main": [
         [{"node": "Google Calendar Get Availability", "type": "main", "index": 0}],
-        [{"node": "OpenAI No Booking", "type": "main", "index": 0}]
+        [{"node": "Prepare OpenAI Request No Booking", "type": "main", "index": 0}]
       ]
     },
     "Google Calendar Get Availability": {
@@ -464,9 +494,18 @@
     },
     "Time Slot Free?": {
       "main": [
-        [{"node": "OpenAI Termin Available", "type": "main", "index": 0}],
-        [{"node": "OpenAI Termin Not Available", "type": "main", "index": 0}]
+        [{"node": "Prepare OpenAI Request Available", "type": "main", "index": 0}],
+        [{"node": "Prepare OpenAI Request Not Available", "type": "main", "index": 0}]
       ]
+    },
+    "Prepare OpenAI Request No Booking": {
+      "main": [[{"node": "OpenAI No Booking", "type": "main", "index": 0}]]
+    },
+    "Prepare OpenAI Request Available": {
+      "main": [[{"node": "OpenAI Termin Available", "type": "main", "index": 0}]]
+    },
+    "Prepare OpenAI Request Not Available": {
+      "main": [[{"node": "OpenAI Termin Not Available", "type": "main", "index": 0}]]
     },
     "OpenAI No Booking": {
       "main": [[{"node": "Validate OpenAI No Booking", "type": "main", "index": 0}]]
@@ -518,6 +557,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-10-29T22:30:00.000Z",
-  "versionId": "4"
+  "updatedAt": "2025-10-29T22:45:00.000Z",
+  "versionId": "5"
 }
