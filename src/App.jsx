@@ -12,13 +12,13 @@ function App() {
   return (
     <>
       <Helmet>
-        <title>Xyra.Media - AI for Music & Creators</title>
+        <title>Xyra.Digital - AI for Music & Creators</title>
         <meta 
           name="description" 
-          content="Xyra.Media spezialisiert sich auf KI‑Automatisierung für Musikbranche und Social‑Media‑Creator – Agents für Releases, Touren, Community & Commerce." 
+          content="Xyra.Digital spezialisiert sich auf KI‑Automatisierung für Musikbranche und Social‑Media‑Creator – Agents für Releases, Touren, Community & Commerce." 
         />
         <meta name="keywords" content="AI, artificial intelligence, machine learning, NLP, computer vision, AI solutions, automation" />
-        <meta property="og:title" content="Xyra.Media - AI for Music & Creators" />
+        <meta property="og:title" content="Xyra.Digital - AI for Music & Creators" />
         <meta property="og:description" content="Transform your business with cutting-edge AI solutions" />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://xyra.digital" />

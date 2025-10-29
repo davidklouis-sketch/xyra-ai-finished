@@ -39,7 +39,7 @@
     }
   },
   "features": {
-    "heading": "Why Xyra.Media",
+    "heading": "Why Xyra.Digital",
     "subheading": "Practical AI that ships — with the guardrails, observability, and UX polish your users expect.",
     "items": {
       "production": { "title": "Production-first", "desc": "Shipping agents with monitoring, retries, and graceful fallbacks." },

@@ -98,7 +98,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-dark-lighter">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm text-center md:text-left">
-              © {currentYear} Xyra.Media. All rights reserved.
+              © {currentYear} Xyra.Digital. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm">
               <a href="/legal/impressum.html" className="text-gray-400 hover:text-primary transition-colors duration-300">
