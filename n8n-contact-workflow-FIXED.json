@@ -109,20 +109,30 @@
     },
     {
       "parameters": {
+        "jsCode": "const data = $input.item.json;\nreturn {\n  json: {\n    timeMin: data.calendarQuery.timeMin,\n    timeMax: data.calendarQuery.timeMax,\n    timeZone: data.calendarQuery.timeZone,\n    items: [{ id: 'primary' }]\n  }\n};"
+      },
+      "id": "prepare-calendar-request",
+      "name": "Prepare Calendar Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 80]
+    },
+    {
+      "parameters": {
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleCalendarOAuth2Api",
         "requestMethod": "POST",
         "url": "https://www.googleapis.com/calendar/v3/freeBusy",
         "sendBody": true,
         "contentType": "json",
-        "jsonBody": "={{ JSON.stringify({\n  timeMin: $json.calendarQuery.timeMin,\n  timeMax: $json.calendarQuery.timeMax,\n  timeZone: $json.calendarQuery.timeZone,\n  items: [{ id: 'primary' }]\n}) }}",
+        "jsonBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
       "id": "calendar-get-availability",
       "name": "Google Calendar Get Availability",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1340, 80],
+      "position": [1560, 80],
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "your-google-calendar-credential-id",
@@ -138,7 +148,7 @@
       "name": "Check Availability",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1560, 80]
+      "position": [1780, 80]
     },
     {
       "parameters": {
@@ -167,7 +177,7 @@
       "name": "Time Slot Free?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [1780, 80]
+      "position": [2000, 80]
     },
     {
       "parameters": {
@@ -210,7 +220,7 @@
       "name": "Prepare OpenAI Request Available",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2000, -20]
+      "position": [2220, -20]
     },
     {
       "parameters": {
@@ -482,9 +492,12 @@
     },
     "Valid Booking Request?": {
       "main": [
-        [{"node": "Google Calendar Get Availability", "type": "main", "index": 0}],
+        [{"node": "Prepare Calendar Request", "type": "main", "index": 0}],
         [{"node": "Prepare OpenAI Request No Booking", "type": "main", "index": 0}]
       ]
+    },
+    "Prepare Calendar Request": {
+      "main": [[{"node": "Google Calendar Get Availability", "type": "main", "index": 0}]]
     },
     "Google Calendar Get Availability": {
       "main": [[{"node": "Check Availability", "type": "main", "index": 0}]]
