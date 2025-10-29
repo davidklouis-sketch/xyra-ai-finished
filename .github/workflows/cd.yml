@@ -66,10 +66,14 @@ jobs:
       - name: Rsync files to server (safe)
         shell: bash
         run: |
+          # Create .env file locally for rsync
+          echo "DOMAIN=${{ secrets.DOMAIN }}" > .env
+          echo "TRAEFIK_EMAIL=${{ secrets.TRAEFIK_EMAIL }}" >> .env
+
           rsync -avzr \
-            --exclude ".*" \
+            --exclude ".git" \
             -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes" \
-            ./docker-compose.yml ./traefik/ \
+            ./docker-compose.yml ./traefik/ .env \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_DIR }}/app/"
 
       - name: Deploy via SSH (docker compose up)
@@ -86,5 +90,17 @@ jobs:
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker compose pull --quiet || true
             docker compose up -d --force-recreate
+
+            # Wait for website container to become healthy (max 60s)
+            echo "Waiting for website container to become healthy..."
+            for i in {1..12}; do
+              if docker inspect app-website-1 --format='{{.State.Health.Status}}' 2>/dev/null | grep -q "healthy"; then
+                echo "Container is healthy!"
+                break
+              fi
+              echo "Waiting... ($i/12)"
+              sleep 5
+            done
+
             docker compose ps
             docker image prune -f
