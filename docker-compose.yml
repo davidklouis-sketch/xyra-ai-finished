@@ -26,16 +26,16 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      # HTTPS Router
-      - "traefik.http.routers.website.rule=Host(`${DOMAIN:-xyra.digital}`)"
+      # HTTPS Router - Multiple Domains
+      - "traefik.http.routers.website.rule=Host(`xyra.digital`) || Host(`www.xyra.digital`) || Host(`xyra-ai.de`) || Host(`www.xyra-ai.de`)"
       - "traefik.http.routers.website.entrypoints=websecure"
       - "traefik.http.routers.website.tls=true"
       - "traefik.http.routers.website.tls.certresolver=letsencrypt"
       - "traefik.http.services.website.loadbalancer.server.port=80"
-      # HTTP to HTTPS Redirect
+      # HTTP to HTTPS Redirect - Multiple Domains
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
-      - "traefik.http.routers.website-http.rule=Host(`${DOMAIN:-xyra.digital}`)"
+      - "traefik.http.routers.website-http.rule=Host(`xyra.digital`) || Host(`www.xyra.digital`) || Host(`xyra-ai.de`) || Host(`www.xyra-ai.de`)"
       - "traefik.http.routers.website-http.entrypoints=web"
       - "traefik.http.routers.website-http.middlewares=redirect-to-https"
     networks:
