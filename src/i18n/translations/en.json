@@ -39,7 +39,7 @@
   },
   "features": {
     "heading": "Why Xyra.Digital",
-    "subheading": "Practical AI that ships — with the guardrails, observability, and UX polish your users expect.",
+    "subheading": "Reliable AI systems with built-in security, full observability, and exceptional user experience.",
     "items": {
       "production": { "title": "Production-first", "desc": "Shipping agents with monitoring, retries, and graceful fallbacks." },
       "human": { "title": "Human-centered", "desc": "Great UX with clear affordances and human handoff where it matters." },
