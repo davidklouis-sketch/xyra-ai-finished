@@ -26,18 +26,51 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      # HTTPS Router - Multiple Domains
-      - "traefik.http.routers.website.rule=Host(`xyra.digital`) || Host(`www.xyra.digital`) || Host(`xyra-ai.de`) || Host(`www.xyra-ai.de`)"
-      - "traefik.http.routers.website.entrypoints=websecure"
-      - "traefik.http.routers.website.tls=true"
-      - "traefik.http.routers.website.tls.certresolver=letsencrypt"
+      # Service
       - "traefik.http.services.website.loadbalancer.server.port=80"
-      # HTTP to HTTPS Redirect - Multiple Domains
+      # HTTP to HTTPS Redirect Middleware (except for ACME challenges)
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
-      - "traefik.http.routers.website-http.rule=Host(`xyra.digital`) || Host(`www.xyra.digital`) || Host(`xyra-ai.de`) || Host(`www.xyra-ai.de`)"
-      - "traefik.http.routers.website-http.entrypoints=web"
-      - "traefik.http.routers.website-http.middlewares=redirect-to-https"
+
+      # xyra.digital - HTTPS
+      - "traefik.http.routers.website-xyra-digital.rule=Host(`xyra.digital`)"
+      - "traefik.http.routers.website-xyra-digital.entrypoints=websecure"
+      - "traefik.http.routers.website-xyra-digital.tls=true"
+      - "traefik.http.routers.website-xyra-digital.tls.certresolver=letsencrypt"
+      # xyra.digital - HTTP Redirect
+      - "traefik.http.routers.website-xyra-digital-http.rule=Host(`xyra.digital`)"
+      - "traefik.http.routers.website-xyra-digital-http.entrypoints=web"
+      - "traefik.http.routers.website-xyra-digital-http.middlewares=redirect-to-https"
+
+      # www.xyra.digital - HTTPS
+      - "traefik.http.routers.website-www-xyra-digital.rule=Host(`www.xyra.digital`)"
+      - "traefik.http.routers.website-www-xyra-digital.entrypoints=websecure"
+      - "traefik.http.routers.website-www-xyra-digital.tls=true"
+      - "traefik.http.routers.website-www-xyra-digital.tls.certresolver=letsencrypt"
+      # www.xyra.digital - HTTP Redirect
+      - "traefik.http.routers.website-www-xyra-digital-http.rule=Host(`www.xyra.digital`)"
+      - "traefik.http.routers.website-www-xyra-digital-http.entrypoints=web"
+      - "traefik.http.routers.website-www-xyra-digital-http.middlewares=redirect-to-https"
+
+      # xyra-ai.de - HTTPS
+      - "traefik.http.routers.website-xyra-ai-de.rule=Host(`xyra-ai.de`)"
+      - "traefik.http.routers.website-xyra-ai-de.entrypoints=websecure"
+      - "traefik.http.routers.website-xyra-ai-de.tls=true"
+      - "traefik.http.routers.website-xyra-ai-de.tls.certresolver=letsencrypt"
+      # xyra-ai.de - HTTP Redirect
+      - "traefik.http.routers.website-xyra-ai-de-http.rule=Host(`xyra-ai.de`)"
+      - "traefik.http.routers.website-xyra-ai-de-http.entrypoints=web"
+      - "traefik.http.routers.website-xyra-ai-de-http.middlewares=redirect-to-https"
+
+      # www.xyra-ai.de - HTTPS
+      - "traefik.http.routers.website-www-xyra-ai-de.rule=Host(`www.xyra-ai.de`)"
+      - "traefik.http.routers.website-www-xyra-ai-de.entrypoints=websecure"
+      - "traefik.http.routers.website-www-xyra-ai-de.tls=true"
+      - "traefik.http.routers.website-www-xyra-ai-de.tls.certresolver=letsencrypt"
+      # www.xyra-ai.de - HTTP Redirect
+      - "traefik.http.routers.website-www-xyra-ai-de-http.rule=Host(`www.xyra-ai.de`)"
+      - "traefik.http.routers.website-www-xyra-ai-de-http.entrypoints=web"
+      - "traefik.http.routers.website-www-xyra-ai-de-http.middlewares=redirect-to-https"
     networks:
       - web
 

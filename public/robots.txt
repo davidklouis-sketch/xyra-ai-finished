@@ -1,0 +1,11 @@
+# robots.txt for XyraAI
+# https://xyra-ai.de
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /.well-known/
+
+# Sitemap location
+Sitemap: https://xyra-ai.de/sitemap.xml
+Sitemap: https://xyra.digital/sitemap.xml
