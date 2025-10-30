@@ -5,6 +5,14 @@ import { useI18n } from '../i18n/i18n.jsx'
 
 const Services = () => {
   const { t } = useI18n()
+
+  const handleCardClick = () => {
+    const contactSection = document.querySelector('#contact')
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   const services = [
     { icon: MessageSquare, title: t('services.items.chat.title'), description: t('services.items.chat.desc') },
     { icon: Headphones, title: t('services.items.voice.title'), description: t('services.items.voice.desc') },
@@ -67,6 +75,7 @@ const Services = () => {
             <motion.div
               key={index}
               variants={itemVariants}
+              onClick={handleCardClick}
               className={`card group hover:shadow-lg hover:shadow-primary/20 cursor-pointer ${
                 index % 4 === 0 ? 'lg:col-span-5' : index % 4 === 1 ? 'lg:col-span-7' : index % 4 === 2 ? 'lg:col-span-6' : 'lg:col-span-6'
               }`}
