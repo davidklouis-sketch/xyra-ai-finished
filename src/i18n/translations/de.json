@@ -25,8 +25,7 @@
   },
   "services": {
     "heading": "Was wir bauen",
-    "subheading": "Angewandte KI für Customer Experience und Operations — von Anfang an produktionsreif.",
-    "nicheLine": "Musik & Creator‑Nischen: Kampagnen, Ticketing, Merch, Fan‑Support, Memberships.",
+    "subheading": "Angewandte KI für Customer Experience und Operations – von Anfang an produktionsreif.",
     "items": {
       "chat": { "title": "KI‑Chat‑Agenten", "desc": "Kontextverständnis und Aktionen für Support und Vertrieb." },
       "voice": { "title": "Voice‑Agenten", "desc": "Natürliche Telefonerlebnisse für Buchung, Triage und Follow‑ups mit Leitplanken." },

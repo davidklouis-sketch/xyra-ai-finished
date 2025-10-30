@@ -25,8 +25,7 @@
   },
   "services": {
     "heading": "What we build",
-    "subheading": "Applied AI for customer experience and operations — designed for production from day one.",
-    "nicheLine": "Music & creator niches: campaigns, ticketing, merch, fan support, memberships.",
+    "subheading": "Applied AI for customer experience and operations – designed for production from day one.",
     "items": {
       "chat": { "title": "AI Chat Agents", "desc": "Customer support and sales conversations that understand context and take action." },
       "voice": { "title": "Voice Agents", "desc": "Natural phone experiences for booking, triage, and follow-ups with guardrails." },
