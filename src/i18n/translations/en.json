@@ -38,7 +38,7 @@
     }
   },
   "features": {
-    "heading": "Why Xyra.Digital",
+    "heading": "Why XyraAI",
     "subheading": "Reliable AI systems with built-in security, full observability, and exceptional user experience.",
     "items": {
       "production": { "title": "Production-first", "desc": "Shipping agents with monitoring, retries, and graceful fallbacks." },
