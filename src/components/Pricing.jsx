@@ -94,15 +94,16 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              <button
-                className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
+              <a
+                href="#contact"
+                className={`block w-full py-3 rounded-lg font-semibold transition-all duration-300 text-center ${
                   plan.popular
                     ? 'bg-primary text-black hover:bg-primary-dark hover:scale-105'
                     : 'bg-dark-lighter text-white hover:bg-dark hover:border-primary/40 border-2 border-transparent'
                 }`}
               >
                 {t('pricing.cta')}
-              </button>
+              </a>
             </motion.div>
           ))}
         </div>
