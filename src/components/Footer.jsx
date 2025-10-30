@@ -1,34 +1,36 @@
 import React from 'react'
 import { Linkedin, Twitter, Mail } from 'lucide-react'
 import Logo from './Logo'
+import { useI18n } from '../i18n/i18n.jsx'
 
 const Footer = () => {
+  const { t } = useI18n()
   const currentYear = new Date().getFullYear()
 
   const footerLinks = {
-    Product: [
-      { name: 'Features', href: '#features' },
-      { name: 'Services', href: '#services' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'Documentation', href: '#' },
+    [t('footer.product.title')]: [
+      { name: t('footer.product.features'), href: '#features' },
+      { name: t('footer.product.services'), href: '#services' },
+      { name: t('footer.product.pricing'), href: '#pricing' },
+      { name: t('footer.product.documentation'), href: '#' },
     ],
-    Company: [
-      { name: 'About Us', href: '#' },
-      { name: 'Careers', href: '#' },
-      { name: 'Blog', href: '#' },
-      { name: 'Contact', href: '#contact' },
+    [t('footer.company.title')]: [
+      { name: t('footer.company.about'), href: '#' },
+      { name: t('footer.company.careers'), href: '#' },
+      { name: t('footer.company.blog'), href: '#' },
+      { name: t('footer.company.contact'), href: '#contact' },
     ],
-    Resources: [
-      { name: 'Community', href: '#' },
-      { name: 'Support', href: '#' },
-      { name: 'API Reference', href: '#' },
-      { name: 'Case Studies', href: '#' },
+    [t('footer.resources.title')]: [
+      { name: t('footer.resources.community'), href: '#' },
+      { name: t('footer.resources.support'), href: '#' },
+      { name: t('footer.resources.api'), href: '#' },
+      { name: t('footer.resources.cases'), href: '#' },
     ],
-    Legal: [
-      { name: 'Impressum', href: '/legal/impressum.html' },
-      { name: 'Datenschutz', href: '/legal/datenschutz.html' },
-      { name: 'AGB', href: '/legal/agb.html' },
-      { name: 'Cookie-Richtlinie', href: '/legal/cookies.html' },
+    [t('footer.legal.title')]: [
+      { name: t('footer.legal.impressum'), href: '/legal/impressum.html' },
+      { name: t('footer.legal.privacy'), href: '/legal/datenschutz.html' },
+      { name: t('footer.legal.terms'), href: '/legal/agb.html' },
+      { name: t('footer.legal.cookies'), href: '/legal/cookies.html' },
     ],
   }
 
@@ -55,7 +57,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-gray-400 mb-6">
-              Applied AI for support, sales, and operations — built for production, not demos.
+              {t('footer.tagline')}
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social, index) => (
@@ -101,16 +103,16 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-6 text-sm">
               <a href="/legal/impressum.html" className="text-gray-400 hover:text-primary transition-colors duration-300">
-                Impressum
+                {t('footer.legal.impressum')}
               </a>
               <a href="/legal/datenschutz.html" className="text-gray-400 hover:text-primary transition-colors duration-300">
-                Datenschutz
+                {t('footer.legal.privacy')}
               </a>
               <a href="/legal/agb.html" className="text-gray-400 hover:text-primary transition-colors duration-300">
-                AGB
+                {t('footer.legal.terms')}
               </a>
               <a href="/legal/cookies.html" className="text-gray-400 hover:text-primary transition-colors duration-300">
-                Cookies
+                {t('footer.legal.cookies')}
               </a>
             </div>
           </div>

@@ -99,6 +99,37 @@
       }
     }
   },
+  "footer": {
+    "tagline": "AI for support, sales, and operations — built for production, not demos.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "services": "Services",
+      "pricing": "Pricing",
+      "documentation": "Documentation"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "careers": "Careers",
+      "blog": "Blog",
+      "contact": "Contact"
+    },
+    "resources": {
+      "title": "Resources",
+      "community": "Community",
+      "support": "Support",
+      "api": "API Reference",
+      "cases": "Case Studies"
+    },
+    "legal": {
+      "title": "Legal",
+      "impressum": "Imprint",
+      "privacy": "Privacy Policy",
+      "terms": "Terms & Conditions",
+      "cookies": "Cookie Policy"
+    }
+  },
   "contact": {
     "heading": "Start a conversation",
     "name": "Your Name",

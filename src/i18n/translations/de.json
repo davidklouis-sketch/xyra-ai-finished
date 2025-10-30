@@ -99,6 +99,37 @@
       }
     }
   },
+  "footer": {
+    "tagline": "KI für Support, Vertrieb und Operations – produktionsreif, keine Demos.",
+    "product": {
+      "title": "Produkt",
+      "features": "Funktionen",
+      "services": "Leistungen",
+      "pricing": "Preise",
+      "documentation": "Dokumentation"
+    },
+    "company": {
+      "title": "Unternehmen",
+      "about": "Über uns",
+      "careers": "Karriere",
+      "blog": "Blog",
+      "contact": "Kontakt"
+    },
+    "resources": {
+      "title": "Ressourcen",
+      "community": "Community",
+      "support": "Support",
+      "api": "API Referenz",
+      "cases": "Fallstudien"
+    },
+    "legal": {
+      "title": "Rechtliches",
+      "impressum": "Impressum",
+      "privacy": "Datenschutz",
+      "terms": "AGB",
+      "cookies": "Cookie-Richtlinie"
+    }
+  },
   "contact": {
     "heading": "Starte ein Gespräch",
     "subtitle": "Erzähl uns von deinen Zielen. Wir schlagen einen ersten Schritt vor, der schnell Ergebnisse zeigt.",
