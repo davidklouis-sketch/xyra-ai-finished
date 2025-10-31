@@ -1,0 +1,135 @@
+{
+  "name": "XYRA AI Chatbot - ChatGPT Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://xyra-ai.de,http://localhost:5173"
+        }
+      },
+      "id": "webhook-node",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "your-unique-webhook-id"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo-preview",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "content": "Du bist der offizielle XYRA AI Assistent. XYRA bietet produktionsreife KI-Lösungen für die Musikindustrie und Creator Economy.\n\nDeine Aufgaben:\n- Beantworte Fragen über XYRA's Services (Chat-Agenten, Voice-Agenten, Prozessautomatisierung)\n- Erkläre die drei Projektansätze: Discovery-Sprint (Festpreis), Build & Launch (Monatlich), Scale-Programm (Custom)\n- Qualifiziere Leads: Frage nach ihrer Branche (Musik, Creator, E-Commerce) und konkreten Herausforderungen\n- Sei freundlich, professionell und präzise\n- Wenn du etwas nicht weißt, empfehle direkten Kontakt über das Formular\n\nWebsite: https://xyra-ai.de\nE-Mail: david.louis@xyra-ai.de"
+            },
+            {
+              "role": "={{$json.body.conversationHistory}}"
+            },
+            {
+              "role": "user",
+              "content": "={{$json.body.message}}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 500
+        }
+      },
+      "id": "chatgpt-node",
+      "name": "ChatGPT",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credentials-id",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"response\": $json.choices[0].message.content,\n  \"timestamp\": new Date().toISOString(),\n  \"conversationId\": $json.id\n} }}"
+      },
+      "id": "response-node",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "your-airtable-base-id",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Chatbot Conversations",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{$json.body.timestamp}}",
+            "User Message": "={{$json.body.message}}",
+            "AI Response": "={{$node[\"ChatGPT\"].json.choices[0].message.content}}",
+            "Conversation History": "={{JSON.stringify($json.body.conversationHistory)}}"
+          }
+        }
+      },
+      "id": "airtable-log",
+      "name": "Log to Airtable (Optional)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [650, 450],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "your-airtable-credentials-id",
+          "name": "Airtable account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "ChatGPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatGPT": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log to Airtable (Optional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
