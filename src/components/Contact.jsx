@@ -349,7 +349,7 @@ const Contact = () => {
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-400 mt-1">9:00 - 18:00 Uhr</p>
+                    <p className="text-xs text-gray-400 mt-2 pl-4">9:00 - 18:00 Uhr</p>
                   </div>
                   <div>
                     <label htmlFor="duration" className="block text-sm font-medium mb-2">{t('contact.schedule.duration')}</label>
