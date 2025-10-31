@@ -175,16 +175,11 @@ const ChatBot = () => {
                 <p className="text-xs text-gray-400">Powered by ChatGPT</p>
               </div>
               <button
-                onClick={() => {
-                  setMessages([{
-                    role: 'assistant',
-                    content: 'Hallo! Ich bin der XYRA AI Assistent. Wie kann ich dir helfen?'
-                  }])
-                }}
-                className="text-xs text-gray-400 hover:text-white transition-colors"
-                title="Chat zurücksetzen"
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+                title="Chat schließen"
               >
-                <X size={16} />
+                <X size={20} />
               </button>
             </div>
 
