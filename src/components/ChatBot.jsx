@@ -14,8 +14,8 @@ const ChatBot = () => {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef(null)
 
-  // N8N Webhook URL - Diese URL musst du nach dem N8N Workflow erstellen hier eintragen
-  const WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/chatbot'
+  // N8N Webhook URL
+  const WEBHOOK_URL = 'https://n8n.xyra.digital/webhook/chatbot'
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -25,15 +25,59 @@ const ChatBot = () => {
     scrollToBottom()
   }, [messages])
 
+  // Input validation and sanitization
+  const validateAndSanitizeInput = (text) => {
+    // Max length check
+    if (text.length > 1000) {
+      return { valid: false, error: 'Nachricht zu lang (max 1000 Zeichen)' }
+    }
+
+    // Remove potential injection patterns (basic sanitization)
+    const sanitized = text
+      .replace(/\n{3,}/g, '\n\n') // Limit consecutive newlines
+      .trim()
+
+    // Block common prompt injection attempts
+    const dangerousPatterns = [
+      /ignore\s+(all\s+)?(previous|above|prior)\s+instructions/i,
+      /you\s+are\s+now/i,
+      /system\s*:/i,
+      /\[SYSTEM\]/i,
+      /new\s+instructions/i,
+      /forget\s+(everything|all|previous)/i,
+      /disregard/i
+    ]
+
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(sanitized)) {
+        return { valid: false, error: 'Ungültige Eingabe erkannt' }
+      }
+    }
+
+    return { valid: true, sanitized }
+  }
+
   const sendMessage = async (e) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
 
     const userMessage = input.trim()
+
+    // Validate and sanitize input
+    const validation = validateAndSanitizeInput(userMessage)
+    if (!validation.valid) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: validation.error
+      }])
+      setInput('')
+      return
+    }
+
     setInput('')
 
     // Add user message
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }])
+    setMessages(prev => [...prev, { role: 'user', content: validation.sanitized }])
     setIsLoading(true)
 
     try {
@@ -44,9 +88,14 @@ const ChatBot = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: userMessage,
+          message: validation.sanitized,
           conversationHistory: messages.slice(-10), // Last 10 messages for context
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          sessionId: sessionStorage.getItem('chatSessionId') || (() => {
+            const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            sessionStorage.setItem('chatSessionId', id)
+            return id
+          })()
         })
       })
 
@@ -121,10 +170,22 @@ const ChatBot = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
                 <MessageSquare className="text-black" size={20} />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="font-semibold text-white">XYRA AI Assistent</h3>
                 <p className="text-xs text-gray-400">Powered by ChatGPT</p>
               </div>
+              <button
+                onClick={() => {
+                  setMessages([{
+                    role: 'assistant',
+                    content: 'Hallo! Ich bin der XYRA AI Assistent. Wie kann ich dir helfen?'
+                  }])
+                }}
+                className="text-xs text-gray-400 hover:text-white transition-colors"
+                title="Chat zurücksetzen"
+              >
+                <X size={16} />
+              </button>
             </div>
 
             {/* Messages */}
