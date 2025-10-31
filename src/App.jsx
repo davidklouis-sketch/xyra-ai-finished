@@ -67,7 +67,7 @@ function App() {
             ],
             "contactPoint": {
               "@type": "ContactPoint",
-              "email": "david.louis@xyra.digital",
+              "email": "david.louis@xyra-ai.de",
               "contactType": "Customer Service",
               "areaServed": ["DE", "AT", "CH"],
               "availableLanguage": ["German", "English"]

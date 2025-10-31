@@ -128,7 +128,7 @@ const Contact = () => {
         console.error('Error submitting form:', error)
         setStatus({
           type: 'error',
-          message: 'Something went wrong. Please try again or email us directly at david.louis@xyra.digital',
+          message: 'Something went wrong. Please try again or email us directly at david.louis@xyra-ai.de',
         })
       } finally {
         setIsSubmitting(false)
@@ -159,8 +159,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      value: 'david.louis@xyra.digital',
-      link: 'mailto:david.louis@xyra.digital',
+      value: 'david.louis@xyra-ai.de',
+      link: 'mailto:david.louis@xyra-ai.de',
     },
     {
       icon: Phone,

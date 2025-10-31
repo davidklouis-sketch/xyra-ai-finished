@@ -37,7 +37,7 @@ const Footer = () => {
   const socialLinks = [
     { icon: Twitter, href: 'https://x.com/Xyra_Digital', label: 'X (Twitter)' },
     { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: Mail, href: 'mailto:david.louis@xyra.digital', label: 'Email' },
+    { icon: Mail, href: 'mailto:david.louis@xyra-ai.de', label: 'Email' },
   ]
 
   return (
