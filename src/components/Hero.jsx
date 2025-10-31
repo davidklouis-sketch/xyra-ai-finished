@@ -20,7 +20,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-aurora" />
         <div className="absolute inset-0 bg-radial-spot" />
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] rounded-full blur-3xl opacity-20" style={{
-          background: 'radial-gradient(closest-side, rgba(34,211,238,0.25), transparent 70%)'
+          background: 'radial-gradient(closest-side, rgba(48,248,237,0.3), transparent 70%)'
         }} />
         <div className="absolute inset-0" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',

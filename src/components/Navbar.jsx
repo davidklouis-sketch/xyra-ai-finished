@@ -54,7 +54,7 @@ const Navbar = () => {
         <div className="relative flex justify-between items-center h-20">
           {/* Logo */}
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center gap-3 group">
-            <Logo className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
+            <Logo className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" animate={true} />
             <span className="text-2xl font-bold tracking-tight">
               <span className="text-primary">Xyra</span>AI
             </span>

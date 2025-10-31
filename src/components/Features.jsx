@@ -19,7 +19,7 @@ const Features = () => {
   return (
     <section id="features" className="section-padding bg-dark relative scroll-mt-24 md:scroll-mt-28">
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(900px circle at 80% 20%, rgba(0,255,136,0.12), transparent 40%)'
+        backgroundImage: 'radial-gradient(900px circle at 80% 20%, rgba(48,248,237,0.12), transparent 40%)'
       }} />
       <div className="relative max-w-7xl mx-auto px-4 md:px-8">
         <motion.div

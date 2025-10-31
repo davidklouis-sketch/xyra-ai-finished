@@ -28,13 +28,14 @@
     font-weight: 600;
     color: #000000;
     transition: all 300ms ease;
-    background: linear-gradient(180deg, #33ffaa, #00ff88);
-    box-shadow: 0 10px 24px rgba(0,255,136,0.25);
+    background: linear-gradient(180deg, #aaf6ec, #30f8ed);
+    box-shadow: 0 10px 24px rgba(48,248,237,0.3);
   }
 
   .btn-primary:hover {
     transform: scale(1.03);
     filter: saturate(1.1);
+    box-shadow: 0 12px 28px rgba(48,248,237,0.4);
   }
 
   .btn-secondary {
@@ -42,8 +43,8 @@
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
     font-weight: 600;
-    color: #00ff88;
-    border: 1px solid rgba(0,255,136,0.35);
+    color: #30f8ed;
+    border: 1px solid rgba(48,248,237,0.35);
     background-color: rgba(11,11,18,0.4);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
@@ -51,9 +52,9 @@
   }
 
   .btn-secondary:hover {
-    border-color: #00ff88;
+    border-color: #30f8ed;
     color: #ffffff;
-    box-shadow: 0 10px 24px rgba(0,255,136,0.18);
+    box-shadow: 0 10px 24px rgba(48,248,237,0.25);
   }
 
   .section-padding {
@@ -75,8 +76,8 @@
   }
 
   .card:hover {
-    border-color: rgba(0,255,136,0.35);
-    box-shadow: 0 12px 28px rgba(0,255,136,0.14);
+    border-color: rgba(48,248,237,0.35);
+    box-shadow: 0 12px 28px rgba(48,248,237,0.18);
   }
 
   /* Subtle heading accent underline */
@@ -93,10 +94,37 @@
     transform: translateY(0.2em);
     width: 100%;
     height: 0.12em;
-    background: linear-gradient(90deg, rgba(0,255,136,0.22), rgba(0,255,136,0.12));
+    background: linear-gradient(90deg, rgba(48,248,237,0.35), rgba(0,235,98,0.15));
     border-radius: 9999px;
     pointer-events: none;
     z-index: -1; /* ensure the accent is behind the text */
+  }
+
+  /* Logo animations */
+  @keyframes logo-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px rgba(48,248,237,0.5)) brightness(1.1);
+    }
+    50% {
+      filter: drop-shadow(0 0 12px rgba(48,248,237,0.7)) brightness(1.15);
+    }
+  }
+
+  @keyframes logo-float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .logo-animate {
+    animation: logo-pulse 3s ease-in-out infinite;
+  }
+
+  .logo-float {
+    animation: logo-float 4s ease-in-out infinite;
   }
 }
 /* stylelint-enable at-rule-no-unknown */

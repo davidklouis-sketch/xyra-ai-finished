@@ -47,7 +47,7 @@ function App() {
 
         {/* Additional SEO Tags */}
         <meta name="theme-color" content="#0B0B12" />
-        <meta name="msapplication-TileColor" content="#00ff88" />
+        <meta name="msapplication-TileColor" content="#30f8ed" />
         <link rel="alternate" hreflang="de" href="https://xyra-ai.de/" />
         <link rel="alternate" hreflang="en" href="https://xyra-ai.de/" />
         <link rel="alternate" hreflang="x-default" href="https://xyra-ai.de/" />

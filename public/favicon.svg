@@ -1,8 +1,9 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="xGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00ff88" />
-      <stop offset="100%" stop-color="#00d9ff" />
+      <stop offset="0%" stop-color="#30f8ed" />
+      <stop offset="50%" stop-color="#24e6be" />
+      <stop offset="100%" stop-color="#00eb62" />
     </linearGradient>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="2" result="blur" />
@@ -28,14 +29,14 @@
   <circle cx="50" cy="50" r="8" fill="url(#xGradient)" opacity="0.9" />
 
   <!-- Digital pixel accents - corners -->
-  <rect x="18" y="18" width="8" height="8" fill="#00ff88" opacity="0.6" />
-  <rect x="74" y="18" width="8" height="8" fill="#00ff88" opacity="0.6" />
-  <rect x="18" y="74" width="8" height="8" fill="#00ff88" opacity="0.6" />
-  <rect x="74" y="74" width="8" height="8" fill="#00ff88" opacity="0.6" />
+  <rect x="18" y="18" width="8" height="8" fill="#30f8ed" opacity="0.6" />
+  <rect x="74" y="18" width="8" height="8" fill="#30f8ed" opacity="0.6" />
+  <rect x="18" y="74" width="8" height="8" fill="#00eb62" opacity="0.6" />
+  <rect x="74" y="74" width="8" height="8" fill="#00eb62" opacity="0.6" />
 
   <!-- Connecting lines - digital grid -->
-  <line x1="22" y1="22" x2="50" y2="50" stroke="#00ff88" stroke-width="1" opacity="0.2" />
-  <line x1="78" y1="22" x2="50" y2="50" stroke="#00ff88" stroke-width="1" opacity="0.2" />
-  <line x1="22" y1="78" x2="50" y2="50" stroke="#00ff88" stroke-width="1" opacity="0.2" />
-  <line x1="78" y1="78" x2="50" y2="50" stroke="#00ff88" stroke-width="1" opacity="0.2" />
+  <line x1="22" y1="22" x2="50" y2="50" stroke="#30f8ed" stroke-width="1" opacity="0.2" />
+  <line x1="78" y1="22" x2="50" y2="50" stroke="#30f8ed" stroke-width="1" opacity="0.2" />
+  <line x1="22" y1="78" x2="50" y2="50" stroke="#00eb62" stroke-width="1" opacity="0.2" />
+  <line x1="78" y1="78" x2="50" y2="50" stroke="#00eb62" stroke-width="1" opacity="0.2" />
 </svg>

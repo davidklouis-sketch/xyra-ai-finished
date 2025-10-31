@@ -43,7 +43,7 @@ const Footer = () => {
   return (
     <footer className="bg-dark-light border-t border-dark-lighter relative">
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(700px circle at 10% -10%, rgba(0,255,136,0.10), transparent 40%)'
+        backgroundImage: 'radial-gradient(700px circle at 10% -10%, rgba(48,248,237,0.12), transparent 40%)'
       }} />
       <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12">
         {/* Top Section */}

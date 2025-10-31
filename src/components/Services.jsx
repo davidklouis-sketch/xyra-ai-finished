@@ -48,7 +48,7 @@ const Services = () => {
   return (
     <section id="services" className="section-padding bg-dark-light relative scroll-mt-24 md:scroll-mt-28">
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(800px circle at 10% 20%, rgba(0,255,136,0.12), transparent 40%), radial-gradient(700px circle at 90% 60%, rgba(0,255,136,0.10), transparent 40%)'
+        backgroundImage: 'radial-gradient(800px circle at 10% 20%, rgba(48,248,237,0.12), transparent 40%), radial-gradient(700px circle at 90% 60%, rgba(48,248,237,0.10), transparent 40%)'
       }} />
       <div className="relative max-w-7xl mx-auto px-4 md:px-8">
         <motion.div

@@ -39,7 +39,7 @@ const Pricing = () => {
   return (
     <section id="pricing" className="section-padding bg-dark-light relative scroll-mt-24 md:scroll-mt-28">
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(800px circle at 20% 80%, rgba(0,255,136,0.10), transparent 40%)'
+        backgroundImage: 'radial-gradient(800px circle at 20% 80%, rgba(48,248,237,0.10), transparent 40%)'
       }} />
       <div className="relative max-w-7xl mx-auto">
         <motion.div

@@ -179,7 +179,7 @@ const Contact = () => {
   return (
     <section id="contact" className="section-padding bg-dark relative scroll-mt-24 md:scroll-mt-28">
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(900px circle at 85% 70%, rgba(34,211,238,0.10), transparent 40%)'
+        backgroundImage: 'radial-gradient(900px circle at 85% 70%, rgba(48,248,237,0.10), transparent 40%)'
       }} />
       <div className="relative max-w-7xl mx-auto">
         <motion.div
